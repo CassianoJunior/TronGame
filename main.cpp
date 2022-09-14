@@ -5,6 +5,9 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
+#include "./classes/Player.cpp"
+#include "./libraries/OBJLoader.h"
+
 using namespace std;
 
 // Window defines
@@ -20,12 +23,23 @@ using namespace std;
 // Keyboard keys defines
 #define ESCAPE 27
 #define ENTER 13
+#define W_KEY 119
+#define A_KEY 97
+#define S_KEY 115
+#define D_KEY 100
+
+// Direction indentifiers defines
+#define UP 0
+#define DOWN 1
+#define LEFT 2
+#define RIGHT 3
 
 // Global variables
 int optionSelected = FIRST_OPTION;
 bool isInWelcomeScreen = true;
 bool isInInstructionsScreen = false;
 bool isInGame = false;
+
 
 void init(void);
 void reshape(int w, int h);
@@ -41,8 +55,10 @@ void keyboard(unsigned char key, int x, int y);
 void processSpecialKeys(int key, int x, int y);
 void mouse(int button, int state, int x, int y);
 
+GLuint ducati;
 
-
+Player player1;
+Player player2;
 
 int main(int argc, char** argv) {
   glutInit(&argc, argv);
@@ -61,6 +77,8 @@ int main(int argc, char** argv) {
 
   glutMouseFunc(mouse);
 
+  ducati = loadObj("./models/38-ducati/Ducati/x-bikerduc.obj");
+
   glutMainLoop();
 
   return 0;
@@ -77,7 +95,21 @@ void reshape(int w, int h) {
 
   glViewport(0, 0, w, h); 
 
-  glOrtho (0, w, 0, h, -1 ,1);  
+  glOrtho(0, w, 0, h, -1 ,1);
+
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void reshapeInGame(int w, int h) {
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+
+  glViewport(0, 0, w, h); 
+
+  gluPerspective(60, (GLfloat) w / (GLfloat) h, 1.0, 20.0);
+  gluLookAt(0.0, 0.0, 5.0,
+            0.0, 0.0, 0.0, 
+            0.0, 2.0, 3.0);
 
 	glMatrixMode(GL_MODELVIEW);
 }
@@ -100,8 +132,10 @@ void keyboard(unsigned char key, int x, int y){
           case FIRST_OPTION:
             cout << "First option selected" << endl;
             isInGame = true;
+            glutReshapeFunc(reshapeInGame);
             glutDisplayFunc(displayGame2Players);
             glutPostRedisplay();
+            reshapeInGame(WINDOW_WIDTH, WINDOW_HEIGHT);
             break;
           case SECOND_OPTION:
             cout << "Second option selected" << endl;
@@ -116,6 +150,34 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         }
+      }
+      break;
+    case W_KEY:
+      if(isInGame){
+        cout << "UP" << endl;
+        player1.move(UP);
+        glutPostRedisplay();
+      }
+      break;
+    case A_KEY:
+      if(isInGame){
+        cout << "LEFT" << endl;
+        player1.move(LEFT);
+        glutPostRedisplay();
+      }
+      break;
+    case S_KEY:
+      if(isInGame){
+        cout << "DOWN" << endl;
+        player1.move(DOWN);
+        glutPostRedisplay();
+      }
+      break;
+    case D_KEY:
+      if(isInGame){
+        cout << "RIGHT" << endl;
+        player1.move(RIGHT);
+        glutPostRedisplay();
       }
       break;
     default:
@@ -170,10 +232,15 @@ void displayGame2Players(){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
 
-  switchColor(0.0, 1.0, 1.0);
-  glPushMatrix();
-    glutSolidCube(2);
-  glPopMatrix();
+
+  // player1.render(ducati, 0.01, 0.24, 0.85, -2, -2, -20);
+  // player2.render(ducati, 1.0, 0.17, 0.05, 2, 2, -20);
+
+  player1.renderSphere(0.01, 0.24, 0.85, 0.3, 0.3, 0.3);
+  player2.renderSphere(1.0, 0.17, 0.05, 0.3, 0.3, 0.3);
+
+  cout << "Player1 xy(" << player1.getXCoordenate() << "," << player1.getYCoordenate() << ")" << endl;
+  cout << "Player2 xy(" << player2.getXCoordenate() << "," << player2.getYCoordenate() << ")" << endl;
 
   glutSwapBuffers();
 }
@@ -221,7 +288,7 @@ void welcomeDisplay(){
       writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
       break;
     case FOURTH_OPTION:
-      writeText(instructions1, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-275);
+      writeText(instructions1, WINDOW_WIDTH/2- 150, WINDOW_HEIGHT-275);
       writeText(instructions2, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
       writeText(instructions3, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
       switchColor(1.0, 1.0, 0.0);
