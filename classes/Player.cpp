@@ -10,7 +10,7 @@
 #define LEFT 2
 #define RIGHT 3
 
-#define DEFAULT_DISPLACEMENT 0.1
+#define DEFAULT_DISPLACEMENT 1
 
 struct Coordenate {
   int x;
@@ -37,8 +37,6 @@ class Player{
 };
 
 void Player::render(GLuint object, float r, float g, float b, float translateX, float translateY, float translateZ) {
-  setCoordenate(translateX, translateY);
-
   glPushMatrix();
     glTranslatef(translateX, translateY, translateZ);
     glColor3f(r, g, b);
@@ -51,7 +49,6 @@ void Player::renderSphere(float r, float g, float b, float scaleX, float scaleY,
     glTranslatef(this->xCoordenate, this->yCoordenate, 0);
     glScalef(scaleX, scaleY, scaleZ);
     glColor3f(r, g, b);
-    glScalef(0.2,0.2,0.2);
     glutSolidSphere(1, 50, 50);
   glPopMatrix();
 }
