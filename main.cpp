@@ -81,6 +81,7 @@ void keyboard(unsigned char key, int x, int y);
 void processSpecialKeys(int key, int x, int y);
 void mouse(int button, int state, int x, int y);
 void timer(int value);
+void idle(int value);
 
 int main(int argc, char** argv) {
   glutInit(&argc, argv);
@@ -99,10 +100,10 @@ int main(int argc, char** argv) {
 
   glutMouseFunc(mouse);
 
-  glutTimerFunc(2000, timer, 0);
+  glutTimerFunc(0, idle, 0);
 
   ducati = loadObj("./models/38-ducati/Ducati/x-bikerduc.obj");
-  // sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
+  sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
 
   glutMainLoop();
 
@@ -164,6 +165,7 @@ void keyboard(unsigned char key, int x, int y){
           case FIRST_OPTION:
             cout << "First option selected" << endl;
             changeScreen(IN_GAME_SCREEN);
+            glutTimerFunc(2000, timer, 0);
             break;
           case SECOND_OPTION:
             cout << "Second option selected" << endl;
@@ -596,42 +598,49 @@ void displayInstructions_PTBR(){
 }
 
 void timer(int value){
+  if(isInGame){
+    glutPostRedisplay();
+    glutTimerFunc(1000/FPS, timer, 0);
+
+    switch(player1Direction){
+      case UP:
+        player1->move(UP);
+        break;
+      case DOWN:
+        player1->move(DOWN);
+        break;
+      case LEFT:
+        player1->move(LEFT);
+        break;
+      case RIGHT:
+        player1->move(RIGHT);
+        break;
+      default:
+        break;
+    }
+
+    switch(player2Direction){
+      case UP:
+        player2->move(UP);
+        break;
+      case DOWN:
+        player2->move(DOWN);
+        break;
+      case LEFT:
+        player2->move(LEFT);
+        break;
+      case RIGHT:
+        player2->move(RIGHT);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+void idle(int value){
   glutPostRedisplay();
-  glutTimerFunc(1000/FPS, timer, 0);
-
-  switch(player1Direction){
-    case UP:
-      player1->move(UP);
-      break;
-    case DOWN:
-      player1->move(DOWN);
-      break;
-    case LEFT:
-      player1->move(LEFT);
-      break;
-    case RIGHT:
-      player1->move(RIGHT);
-      break;
-    default:
-      break;
-  }
-
-  switch(player2Direction){
-    case UP:
-      player2->move(UP);
-      break;
-    case DOWN:
-      player2->move(DOWN);
-      break;
-    case LEFT:
-      player2->move(LEFT);
-      break;
-    case RIGHT:
-      player2->move(RIGHT);
-      break;
-    default:
-      break;
-  }
+  glutTimerFunc(1000/FPS, idle, 0);
 }
 
 void writeText(string text, int x, int y){

@@ -15,7 +15,7 @@
 		<ProductVersion Value="1.0.0.0"/>
 		<AutoIncrementBuild Value="No"/>
 	</VersionInfo>
-	<Libs Value="-static -lglut32 -lglu32 -lopengl32 -lwinmm -lgdi32"/>
+	<Libs Value="-static -lglut32 -lglu32 -lopengl32 -lwinmm -lgdi32 -std=c++0x"/>
 	<Flags Value="-DGLUT_STATIC"/>
 	<Target Value="TronGame.exe"/>
 	<CommandLine Value=""/>
