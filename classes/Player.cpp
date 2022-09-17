@@ -28,15 +28,16 @@ class Player{
     vector<TrailNode> getTrail();
     void setCoordenate(float x, float y);
     void move(int direction);
-    void render(GLuint object, float r, float g, float b, float translateX, float translateY, float translateZ);
+    void render(GLuint object, float r, float g, float b, float scaleX, float scaleY, float scaleZ);
     void renderSphere(float r, float g, float b, float scaleX, float scaleY, float scaleZ);
     void renderTrail();
     void showTrail();
 };
 
-void Player::render(GLuint object, float r, float g, float b, float translateX, float translateY, float translateZ) {
+void Player::render(GLuint object, float r, float g, float b, float scaleX, float scaleY, float scaleZ) {
   glPushMatrix();
-    glTranslatef(translateX, translateY, translateZ);
+    glTranslatef(this->xCoordenate, this->yCoordenate, 0);
+    glScalef(scaleX, scaleY, scaleZ);
     glColor3f(r, g, b);
     glCallList(object);
   glPopMatrix();

@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
   glutTimerFunc(0, idle, 0);
 
   ducati = loadObj("./models/38-ducati/Ducati/x-bikerduc.obj");
-  sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
+  // sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
 
   glutMainLoop();
 
@@ -115,9 +115,6 @@ void init(void) {
   glClearColor(0.0, 0.0, 0.0, 0.0); 
   player1->setCoordenate(-60, 0);
   player2->setCoordenate(60, 0);
-
-  // cout << "Player1 trail: " << player1->getTrail() << endl;
-  // cout << "Player2 trail: " << player2->getTrail() << endl;
 }
 
 void reshape(int w, int h) {
@@ -300,18 +297,18 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void displayGame2Players(){
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
 
   renderScenario(windowWidth, windowHeight);
 
-  // player1.render(ducati, 0.01, 0.24, 0.85, -2, -2, -20);
-  // player2.render(ducati, 1.0, 0.17, 0.05, 2, 2, -20);
+  // player1->render(ducati, 0.01, 0.24, 0.85, 1, 1, 1);
+  // player2->render(ducati, 1.0, 0.17, 0.05, 1, 1, 1);
 
   player1->renderSphere(0.01, 0.24, 0.85, 1.2, 1.2, 1.2);
-  player1->renderTrail();
+  // player1->renderTrail();
   player2->renderSphere(1.0, 0.17, 0.05, 1.2, 1.2, 1.2);
-  player2->renderTrail();
+  // player2->renderTrail();
 
   // cout << "Player1 xy(" << player1->getXCoordenate() << "," << player1->getYCoordenate() << ")" << endl;
   // player1->showTrail();
@@ -322,131 +319,135 @@ void displayGame2Players(){
 }
 
 void welcomeDisplay_EN(){
-  glClear(GL_COLOR_BUFFER_BIT);
-  glLoadIdentity();
+  if(isInWelcomeScreen) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
 
-  glColor3f(1.0, 1.0, 1.0);
-  string welcome = "Welcome to Tron Game";
-  string instructions1 = "[ 1 ] - Start Two Players Game";
-  string instructions2 = "[ 2 ] - Start Game versus PC";
-  string instructions3 = "[ 3 ] - Start Game versus PC (Hard)";
-  string instructions4 = "[ 4 ] - Tutorial / Instructions";
-  string exit = "[ ESC ] - Exit";
+    glColor3f(1.0, 1.0, 1.0);
+    string welcome = "Welcome to Tron Game";
+    string instructions1 = "[ 1 ] - Start Two Players Game";
+    string instructions2 = "[ 2 ] - Start Game versus PC";
+    string instructions3 = "[ 3 ] - Start Game versus PC (Hard)";
+    string instructions4 = "[ 4 ] - Tutorial / Instructions";
+    string exit = "[ ESC ] - Exit";
 
-  writeText(welcome, windowWidth/2 - 100, windowHeight-225);
+    writeText(welcome, windowWidth/2 - 100, windowHeight-225);
 
-  switch(optionSelected){
-    case FIRST_OPTION:
-      switchColor(1.0, 1.0, 0.0);
-      writeText(instructions1 + " (Press enter)", windowWidth/2 - 150, windowHeight-275);
-      switchColor(1.0, 1.0, 1.0);
-      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
-      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
-      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    case SECOND_OPTION:
-      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
-      switchColor(1.0, 1.0, 0.0);
-      writeText(instructions2 + " (Press enter)", windowWidth/2 - 150, windowHeight-300);
-      switchColor(1.0, 1.0, 1.0);
-      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
-      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    case THIRD_OPTION:
-      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
-      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
-      switchColor(1.0, 1.0, 0.0);
-      writeText(instructions3 + " (Press enter)", windowWidth/2 - 150, windowHeight-325);
-      switchColor(1.0, 1.0, 1.0);
-      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    case FOURTH_OPTION:
-      writeText(instructions1, windowWidth/2- 150, windowHeight-275);
-      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
-      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
-      switchColor(1.0, 1.0, 0.0);
-      writeText(instructions4 + " (Press enter)", windowWidth/2 - 150, windowHeight-350);
-      switchColor(1.0, 1.0, 1.0);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    default:
-      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
-      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
-      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
-      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
-      switchColor(1.0, 1.0, 0.0);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    }
+    switch(optionSelected){
+      case FIRST_OPTION:
+        switchColor(1.0, 1.0, 0.0);
+        writeText(instructions1 + " (Press enter)", windowWidth/2 - 150, windowHeight-275);
+        switchColor(1.0, 1.0, 1.0);
+        writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+        writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+        writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      case SECOND_OPTION:
+        writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+        switchColor(1.0, 1.0, 0.0);
+        writeText(instructions2 + " (Press enter)", windowWidth/2 - 150, windowHeight-300);
+        switchColor(1.0, 1.0, 1.0);
+        writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+        writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      case THIRD_OPTION:
+        writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+        writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+        switchColor(1.0, 1.0, 0.0);
+        writeText(instructions3 + " (Press enter)", windowWidth/2 - 150, windowHeight-325);
+        switchColor(1.0, 1.0, 1.0);
+        writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      case FOURTH_OPTION:
+        writeText(instructions1, windowWidth/2- 150, windowHeight-275);
+        writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+        writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+        switchColor(1.0, 1.0, 0.0);
+        writeText(instructions4 + " (Press enter)", windowWidth/2 - 150, windowHeight-350);
+        switchColor(1.0, 1.0, 1.0);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      default:
+        writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+        writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+        writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+        writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+        switchColor(1.0, 1.0, 0.0);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      }
 
-  glutSwapBuffers();
+    glutSwapBuffers();
+  }
 }
 
 void welcomeDisplay_PTBR(){
-  glClear(GL_COLOR_BUFFER_BIT);
-  glLoadIdentity();
+  if(isInWelcomeScreen) {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
 
-  glColor3f(1.0, 1.0, 1.0);
-  string welcome = "Bem-vindo ao Tron Game";
-  string instructions1 = "[ 1 ] - Jogar com 2 jogadores";
-  string instructions2 = "[ 2 ] - Jogar contra o computador";
-  string instructions3 = "[ 3 ] - Jogar contra o computador (Dificil)";
-  string instructions4 = "[ 4 ] - Tutorial / Instrucoes";
-  string exit = "[ ESC ] - Sair";
+    glColor3f(1.0, 1.0, 1.0);
+    string welcome = "Bem-vindo ao Tron Game";
+    string instructions1 = "[ 1 ] - Jogar com 2 jogadores";
+    string instructions2 = "[ 2 ] - Jogar contra o computador";
+    string instructions3 = "[ 3 ] - Jogar contra o computador (Dificil)";
+    string instructions4 = "[ 4 ] - Tutorial / Instrucoes";
+    string exit = "[ ESC ] - Sair";
 
-  writeText(welcome, windowWidth/2 - 100, windowHeight-225);
+    writeText(welcome, windowWidth/2 - 100, windowHeight-225);
 
-  switch(optionSelected){
-    case FIRST_OPTION:
-      switchColor(1.0, 1.0, 0.0);
-      writeText(instructions1 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-275);
-      switchColor(1.0, 1.0, 1.0);
-      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
-      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
-      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    case SECOND_OPTION:
-      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
-      switchColor(1.0, 1.0, 0.0);
-      writeText(instructions2 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-300);
-      switchColor(1.0, 1.0, 1.0);
-      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
-      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    case THIRD_OPTION:
-      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
-      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
-      switchColor(1.0, 1.0, 0.0);
-      writeText(instructions3 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-325);
-      switchColor(1.0, 1.0, 1.0);
-      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    case FOURTH_OPTION:
-      writeText(instructions1, windowWidth/2- 150, windowHeight-275);
-      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
-      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
-      switchColor(1.0, 1.0, 0.0);
-      writeText(instructions4 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-350);
-      switchColor(1.0, 1.0, 1.0);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    default:
-      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
-      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
-      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
-      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
-      switchColor(1.0, 1.0, 0.0);
-      writeText(exit, windowWidth/2 - 80, windowHeight-395);
-      break;
-    }
+    switch(optionSelected){
+      case FIRST_OPTION:
+        switchColor(1.0, 1.0, 0.0);
+        writeText(instructions1 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-275);
+        switchColor(1.0, 1.0, 1.0);
+        writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+        writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+        writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      case SECOND_OPTION:
+        writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+        switchColor(1.0, 1.0, 0.0);
+        writeText(instructions2 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-300);
+        switchColor(1.0, 1.0, 1.0);
+        writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+        writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      case THIRD_OPTION:
+        writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+        writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+        switchColor(1.0, 1.0, 0.0);
+        writeText(instructions3 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-325);
+        switchColor(1.0, 1.0, 1.0);
+        writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      case FOURTH_OPTION:
+        writeText(instructions1, windowWidth/2- 150, windowHeight-275);
+        writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+        writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+        switchColor(1.0, 1.0, 0.0);
+        writeText(instructions4 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-350);
+        switchColor(1.0, 1.0, 1.0);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      default:
+        writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+        writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+        writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+        writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+        switchColor(1.0, 1.0, 0.0);
+        writeText(exit, windowWidth/2 - 80, windowHeight-395);
+        break;
+      }
 
-  glutSwapBuffers();
+    glutSwapBuffers();
+  }
 }
 
 void displayInstructions_EN(){
@@ -636,6 +637,7 @@ void timer(int value){
         break;
     }
   }
+  glutTimerFunc(1000/FPS, idle, 0);
 }
 
 void idle(int value){
@@ -681,6 +683,9 @@ void changeScreen(int identifier){
       glutReshapeFunc(reshapeInGame);
       glutDisplayFunc(displayGame2Players);
       glutPostRedisplay();
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glutSwapBuffers();
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       reshapeInGame(windowWidth, windowHeight);
       break;
     default:
