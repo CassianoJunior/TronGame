@@ -44,6 +44,7 @@ using namespace std;
 #define WELCOME_SCREEN 0
 #define INSTRUCTIONS_SCREEN 1
 #define IN_GAME_SCREEN 2
+#define GAME_OVER_SCREEN 3
 
 // Language identifiers defines
 #define ENGLISH 0
@@ -54,6 +55,7 @@ int optionSelected = FIRST_OPTION; // Option selected in welcome screen
 bool isInWelcomeScreen = true; // Flag to check if the game is in welcome screen
 bool isInInstructionsScreen = false; // Flag to check if the game is in instructions screen
 bool isInGame = false; // Flag to check if the game is in game screen
+bool isInGameOverScreen = false; // Flag to check if the game is in game over screen
 int language = ENGLISH; // Language selected in welcome screen
 int windowWidth = WINDOW_WIDTH; // Window width
 int windowHeight = WINDOW_HEIGHT; // Window height
@@ -62,9 +64,15 @@ Player* player1 = new Player(); // Player 1
 Player* player2 = new Player(); // Player 2
 int player1Direction = RIGHT; // Player 1 direction
 int player2Direction = LEFT; // Player 2 direction
-
+bool gameover = false; // Flag to check if the game is over
+bool playerIsWinner = false; // Flag to check who is the winner | true = player 1 | false = player 2
+bool hasPlayer2 = false; // Flag to check if the game is single player or versus computer
+int score1 = 0; // Player 1 score
+int score2 = 0; // Player 2 score
 
 void init(void);
+void reset();
+void resetPlayers(void);
 void reshape(int w, int h);
 // Display functions
 void welcomeDisplay_EN(void);
@@ -74,6 +82,7 @@ void welcomeDisplay_PTBR(void);
 void displayInstructions_EN(void);
 void displayInstructions_PTBR(void);
   void writeInstructions(void);
+void displayGameOver_EN(void);
 void displayGame2Players(void);
 
 void keyboard(unsigned char key, int x, int y);
@@ -113,8 +122,22 @@ int main(int argc, char** argv) {
 
 void init(void) {
   glClearColor(0.0, 0.0, 0.0, 0.0); 
+  resetPlayers();
+}
+
+void reset() {
+  resetPlayers();
+  gameover = false;
+  score1 = 0;
+  score2 = 0;
+}
+
+void resetPlayers(){
   player1->setCoordenate(-60, 0);
   player2->setCoordenate(60, 0);
+  player1Direction = RIGHT;
+  player2Direction = LEFT;
+  gameover = false;
 }
 
 void reshape(int w, int h) {
@@ -150,7 +173,7 @@ void reshapeInGame(int w, int h) {
 void keyboard(unsigned char key, int x, int y){
   switch (key) {
     case ESCAPE:
-      if(isInInstructionsScreen) {
+      if(isInInstructionsScreen || isInGameOverScreen) {
         changeScreen(WELCOME_SCREEN);
       } else {
         exit(0);
@@ -161,19 +184,25 @@ void keyboard(unsigned char key, int x, int y){
         switch (optionSelected) {
           case FIRST_OPTION:
             cout << "First option selected" << endl;
+            hasPlayer2 = true;
             changeScreen(IN_GAME_SCREEN);
-            glutTimerFunc(2000, timer, 0);
             break;
           case SECOND_OPTION:
             cout << "Second option selected" << endl;
+            hasPlayer2 = false;
+            changeScreen(IN_GAME_SCREEN);
             break;
           case THIRD_OPTION:
             cout << "Third option selected" << endl;
+            hasPlayer2 = false;
+            changeScreen(IN_GAME_SCREEN);
             break;
           case FOURTH_OPTION:
             changeScreen(INSTRUCTIONS_SCREEN);
             break;
         }
+      } else if (isInGameOverScreen) {
+        changeScreen(IN_GAME_SCREEN);
       }
       break;
     case L:
@@ -314,6 +343,27 @@ void displayGame2Players(){
   // player1->showTrail();
   // cout << "Player2 xy(" << player2->getXCoordenate() << "," << player2->getYCoordenate() << ")" << endl;
   // player2->showTrail();
+  int code = hadSomeCollision(player1, player2);
+  switch(code){
+    case NO_COLLISION:
+      break;
+    case COLLISION_PLAYER_1:
+      cout << "Player 1 colidiu" << endl;
+      gameover = true;
+      score2 += 1;
+      playerIsWinner = false;
+      changeScreen(GAME_OVER_SCREEN);
+      break;
+    case COLLISION_PLAYER_2:
+      cout << "Player 2 colidiu" << endl;
+      gameover = true;
+      playerIsWinner = true;
+      score1 += 1;
+      changeScreen(GAME_OVER_SCREEN);
+      break;
+    default:
+      break;
+  }
 
   glutSwapBuffers();
 }
@@ -598,8 +648,86 @@ void displayInstructions_PTBR(){
   glutSwapBuffers();
 }
 
+void displayGameOver_EN(){
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glLoadIdentity();
+
+  string gameOver = "Game Over";
+  string winner;
+  if(playerIsWinner){
+    winner = "Winner: Player 1";
+  } else {
+    if(hasPlayer2){
+      winner = "Winner: Player 2";
+    } else {
+      winner = "Winner: Computer";
+    }
+  }
+
+  char player1Score[30];
+  char player2Score[30];
+  sprintf(player1Score, "Player 1: %d", score1);
+  sprintf(player2Score, "Player 2: %d", score2);
+
+  string scores[3] = {
+    "Scores:",
+    player1Score,
+    player2Score
+  };
+  string instructions = "Press esc to back to menu or press enter to play again";
+
+  switchColor(1.0, 0.0, 0.0);
+  writeText(gameOver, windowWidth/2 - 40, windowHeight-230);
+  switchColor(0, 1.0, 0);
+  writeText(winner, windowWidth/2 - 60, windowHeight-255);
+  switchColor(1.0, 1.0, 0);
+  writeText(scores[0], windowWidth/2 - 60, windowHeight-305);
+  switchColor(1.0, 1.0, 1.0);
+  writeText(scores[1], windowWidth/2 - 55, windowHeight-330);
+  writeText(scores[2], windowWidth/2 - 55, windowHeight-355);
+  writeText(instructions, windowWidth/2 - 220, windowHeight-450);
+
+  glutSwapBuffers();
+}
+
+void displayGameOver_PTBR(){
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glLoadIdentity();
+
+  string gameOver = "Fim de jogo";
+  string winner;
+  if(playerIsWinner){
+    winner = "Vencedor: Jogador 1";
+  } else {
+    if(hasPlayer2){
+      winner = "Vencedor: Jogador 2";
+    } else {
+      winner = "Vencedor: Computador";
+    }
+  }
+  string scores[3] = {
+    "Placar:",
+    "Jogador 1: " + score1,
+    "Jogador 2: " + score2
+  };
+  string instructions = "Pressione esc para voltar para o menu ou pressione enter para jogar de novo";
+
+  switchColor(1.0, 0.0, 0.0);
+  writeText(gameOver, windowWidth/2 - 40, windowHeight-230);
+  switchColor(0, 1.0, 0);
+  writeText(winner, windowWidth/2 - 60, windowHeight-255);
+  switchColor(1.0, 1.0, 0);
+  writeText(scores[0], windowWidth/2 - 60, windowHeight-305);
+  switchColor(1.0, 1.0, 1.0);
+  writeText(scores[1], windowWidth/2 - 55, windowHeight-330);
+  writeText(scores[2], windowWidth/2 - 55, windowHeight-355);
+  writeText(instructions, windowWidth/2 - 320, windowHeight-450);
+
+  glutSwapBuffers();
+}
+
 void timer(int value){
-  if(isInGame){
+  if(isInGame && !gameover){
     glutPostRedisplay();
     glutTimerFunc(1000/FPS, timer, 0);
 
@@ -637,11 +765,9 @@ void timer(int value){
         break;
     }
   }
-  glutTimerFunc(1000/FPS, idle, 0);
 }
 
 void idle(int value){
-  glutPostRedisplay();
   glutTimerFunc(1000/FPS, idle, 0);
 }
 
@@ -662,31 +788,56 @@ void changeScreen(int identifier){
       isInWelcomeScreen = true;
       isInInstructionsScreen = false;
       isInGame = false;
+      isInGameOverScreen = false;
       language == ENGLISH 
         ? glutDisplayFunc(welcomeDisplay_EN) 
         : glutDisplayFunc(welcomeDisplay_PTBR);
+      glutTimerFunc(0, idle, 0);
+      glutReshapeFunc(reshape);
+      reshape(windowWidth, windowHeight);
+      reset();
       glutPostRedisplay();
       break;
     case INSTRUCTIONS_SCREEN:
       isInWelcomeScreen = false;
       isInInstructionsScreen = true;
       isInGame = false;
+      isInGameOverScreen = false;
       language == ENGLISH 
         ? glutDisplayFunc(displayInstructions_EN) 
         : glutDisplayFunc(displayInstructions_PTBR);
+      glutTimerFunc(0, idle, 0);
+      glutReshapeFunc(reshape);
+      reshape(windowWidth, windowHeight);
       glutPostRedisplay();
       break;
     case IN_GAME_SCREEN:
       isInWelcomeScreen = false;
       isInInstructionsScreen = false;
       isInGame = true;
+      isInGameOverScreen = false;
       glutReshapeFunc(reshapeInGame);
       glutDisplayFunc(displayGame2Players);
-      glutPostRedisplay();
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glutSwapBuffers();
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glutTimerFunc(2000, timer, 0);
       reshapeInGame(windowWidth, windowHeight);
+      glutPostRedisplay();
+      break;
+    case GAME_OVER_SCREEN:
+      isInWelcomeScreen = false;
+      isInInstructionsScreen = false;
+      isInGame = false;
+      isInGameOverScreen = true;
+      language == ENGLISH 
+        ? glutDisplayFunc(displayGameOver_EN) 
+        : glutDisplayFunc(displayGameOver_PTBR);
+      resetPlayers();
+      glutTimerFunc(0, idle, 0);
+      glutReshapeFunc(reshape);
+      reshape(windowWidth, windowHeight);
+      glutPostRedisplay();
       break;
     default:
       break;
