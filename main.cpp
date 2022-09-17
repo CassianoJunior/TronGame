@@ -5,14 +5,19 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
+#include <Windows.h>
+#include <MMSystem.h>
+
 #include "./classes/Player.cpp"
 #include "./libraries/OBJLoader.h"
+#include "./libraries/gameFunctions.h"
 
 using namespace std;
 
-// Window defines
+// Main defines
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+#define FPS 30
 
 // Welcome window options defines
 #define FIRST_OPTION 0
@@ -45,11 +50,18 @@ using namespace std;
 #define PORTUGUESE 1
 
 // Global variables
-int optionSelected = FIRST_OPTION;
-bool isInWelcomeScreen = true;
-bool isInInstructionsScreen = false;
-bool isInGame = false;
-int language = ENGLISH;
+int optionSelected = FIRST_OPTION; // Option selected in welcome screen
+bool isInWelcomeScreen = true; // Flag to check if the game is in welcome screen
+bool isInInstructionsScreen = false; // Flag to check if the game is in instructions screen
+bool isInGame = false; // Flag to check if the game is in game screen
+int language = ENGLISH; // Language selected in welcome screen
+int windowWidth = WINDOW_WIDTH; // Window width
+int windowHeight = WINDOW_HEIGHT; // Window height
+GLuint ducati; // Ducati object model
+Player* player1 = new Player(); // Player 1
+Player* player2 = new Player(); // Player 2
+int player1Direction = RIGHT; // Player 1 direction
+int player2Direction = LEFT; // Player 2 direction
 
 
 void init(void);
@@ -68,11 +80,7 @@ void keyboard(unsigned char key, int x, int y);
   void changeScreen(int identifier);
 void processSpecialKeys(int key, int x, int y);
 void mouse(int button, int state, int x, int y);
-
-GLuint ducati;
-
-Player player1;
-Player player2;
+void timer(int value);
 
 int main(int argc, char** argv) {
   glutInit(&argc, argv);
@@ -87,11 +95,14 @@ int main(int argc, char** argv) {
   glutDisplayFunc(welcomeDisplay_EN);
 
   glutKeyboardFunc(keyboard);
-  glutSpecialFunc(processSpecialKeys);
+  glutSpecialFunc(processSpecialKeys);\
 
   glutMouseFunc(mouse);
 
+  glutTimerFunc(2000, timer, 0);
+
   ducati = loadObj("./models/38-ducati/Ducati/x-bikerduc.obj");
+  // sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
 
   glutMainLoop();
 
@@ -101,14 +112,19 @@ int main(int argc, char** argv) {
 
 void init(void) {
   glClearColor(0.0, 0.0, 0.0, 0.0); 
-  player1.setCoordenate(-40, 0);
-  player2.setCoordenate(40, 0);
+  player1->setCoordenate(-60, 0);
+  player2->setCoordenate(60, 0);
+
+  // cout << "Player1 trail: " << player1->getTrail() << endl;
+  // cout << "Player2 trail: " << player2->getTrail() << endl;
 }
 
 void reshape(int w, int h) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
+  windowWidth = w;
+  windowHeight = h;
   glViewport(0, 0, w, h); 
 
   glOrtho(0, w, 0, h, -1 ,1);
@@ -120,10 +136,13 @@ void reshapeInGame(int w, int h) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
+  windowWidth = w;
+  windowHeight = h;
+
   glViewport(0, 0, w, h); 
 
-  gluPerspective(60, (GLfloat) w / (GLfloat) h, 0.0, 120.0);
-  gluLookAt(0.0, 0.0, 100.0,
+  gluPerspective(60, (GLfloat) w / (GLfloat) h, 0.0, 150.0);
+  gluLookAt(0.0, 0.0, 130.0,
             0.0, 0.0, 0.0, 
             0.0, 2.0, 3.0);
 
@@ -169,28 +188,40 @@ void keyboard(unsigned char key, int x, int y){
     case W_KEY:
       if(isInGame){
         cout << "Player 1 UP" << endl;
-        player1.move(UP);
+        if(player1Direction != DOWN) {
+          player1Direction = UP;
+          // player1->move(UP);
+        }
         glutPostRedisplay();
       }
       break;
     case A_KEY:
       if(isInGame){
         cout << "Player 1 LEFT" << endl;
-        player1.move(LEFT);
+        if(player1Direction != RIGHT) {
+          player1Direction = LEFT;
+          // player1->move(LEFT);
+        }
         glutPostRedisplay();
       }
       break;
     case S_KEY:
       if(isInGame){
         cout << "Player 1 DOWN" << endl;
-        player1.move(DOWN);
+        if(player1Direction != UP) {
+          player1Direction = DOWN;
+          // player1->move(DOWN);
+        }
         glutPostRedisplay();
       }
       break;
     case D_KEY:
       if(isInGame){
         cout << "Player 1 RIGHT" << endl;
-        player1.move(RIGHT);
+        if(player1Direction != LEFT) {
+          player1Direction = RIGHT;
+          // player1->move(RIGHT);
+        }
         glutPostRedisplay();
       }
       break;
@@ -210,7 +241,9 @@ void processSpecialKeys(int key, int x, int y) {
         }
       } else if(isInGame){
         cout << "Player 2 UP" << endl;
-        player2.move(UP);
+        if(player2Direction != DOWN){
+          player2Direction = UP;
+        }
       }
       glutPostRedisplay();
       break;
@@ -223,21 +256,27 @@ void processSpecialKeys(int key, int x, int y) {
         }
       } else if(isInGame){
         cout << "Player 2 DOWN" << endl;
-        player2.move(DOWN);
+        if(player2Direction != UP){
+          player2Direction = DOWN;
+        }
       }
       glutPostRedisplay();
       break;
     case GLUT_KEY_LEFT:
       if(isInGame){
         cout << "Player 2 LEFT" << endl;
-        player2.move(LEFT);
+        if(player2Direction != RIGHT){
+          player2Direction = LEFT;
+        }
       }
       glutPostRedisplay();
       break;
     case GLUT_KEY_RIGHT:
       if(isInGame){
         cout << "Player 2 RIGHT" << endl;
-        player2.move(RIGHT);
+        if(player2Direction != LEFT){
+          player2Direction = RIGHT;
+        }
       }
       glutPostRedisplay();
       break;
@@ -262,15 +301,20 @@ void displayGame2Players(){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
 
+  renderScenario(windowWidth, windowHeight);
 
   // player1.render(ducati, 0.01, 0.24, 0.85, -2, -2, -20);
   // player2.render(ducati, 1.0, 0.17, 0.05, 2, 2, -20);
 
-  player1.renderSphere(0.01, 0.24, 0.85, 1, 1, 1);
-  player2.renderSphere(1.0, 0.17, 0.05, 1, 1, 1);
+  player1->renderSphere(0.01, 0.24, 0.85, 1.2, 1.2, 1.2);
+  player1->renderTrail();
+  player2->renderSphere(1.0, 0.17, 0.05, 1.2, 1.2, 1.2);
+  player2->renderTrail();
 
-  cout << "Player1 xy(" << player1.getXCoordenate() << "," << player1.getYCoordenate() << ")" << endl;
-  cout << "Player2 xy(" << player2.getXCoordenate() << "," << player2.getYCoordenate() << ")" << endl;
+  // cout << "Player1 xy(" << player1->getXCoordenate() << "," << player1->getYCoordenate() << ")" << endl;
+  // player1->showTrail();
+  // cout << "Player2 xy(" << player2->getXCoordenate() << "," << player2->getYCoordenate() << ")" << endl;
+  // player2->showTrail();
 
   glutSwapBuffers();
 }
@@ -287,52 +331,52 @@ void welcomeDisplay_EN(){
   string instructions4 = "[ 4 ] - Tutorial / Instructions";
   string exit = "[ ESC ] - Exit";
 
-  writeText(welcome, WINDOW_WIDTH/2 - 100, WINDOW_HEIGHT-225);
+  writeText(welcome, windowWidth/2 - 100, windowHeight-225);
 
   switch(optionSelected){
     case FIRST_OPTION:
       switchColor(1.0, 1.0, 0.0);
-      writeText(instructions1 + " (Press enter)", WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-275);
+      writeText(instructions1 + " (Press enter)", windowWidth/2 - 150, windowHeight-275);
       switchColor(1.0, 1.0, 1.0);
-      writeText(instructions2, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
-      writeText(instructions3, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
-      writeText(instructions4, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     case SECOND_OPTION:
-      writeText(instructions1, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-275);
+      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
       switchColor(1.0, 1.0, 0.0);
-      writeText(instructions2 + " (Press enter)", WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
+      writeText(instructions2 + " (Press enter)", windowWidth/2 - 150, windowHeight-300);
       switchColor(1.0, 1.0, 1.0);
-      writeText(instructions3, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
-      writeText(instructions4, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     case THIRD_OPTION:
-      writeText(instructions1, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-275);
-      writeText(instructions2, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
+      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
       switchColor(1.0, 1.0, 0.0);
-      writeText(instructions3 + " (Press enter)", WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
+      writeText(instructions3 + " (Press enter)", windowWidth/2 - 150, windowHeight-325);
       switchColor(1.0, 1.0, 1.0);
-      writeText(instructions4, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     case FOURTH_OPTION:
-      writeText(instructions1, WINDOW_WIDTH/2- 150, WINDOW_HEIGHT-275);
-      writeText(instructions2, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
-      writeText(instructions3, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
+      writeText(instructions1, windowWidth/2- 150, windowHeight-275);
+      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
       switchColor(1.0, 1.0, 0.0);
-      writeText(instructions4 + " (Press enter)", WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
+      writeText(instructions4 + " (Press enter)", windowWidth/2 - 150, windowHeight-350);
       switchColor(1.0, 1.0, 1.0);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     default:
-      writeText(instructions1, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-275);
-      writeText(instructions2, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
-      writeText(instructions3, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
-      writeText(instructions4, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
+      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
       switchColor(1.0, 1.0, 0.0);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     }
 
@@ -351,52 +395,52 @@ void welcomeDisplay_PTBR(){
   string instructions4 = "[ 4 ] - Tutorial / Instrucoes";
   string exit = "[ ESC ] - Sair";
 
-  writeText(welcome, WINDOW_WIDTH/2 - 100, WINDOW_HEIGHT-225);
+  writeText(welcome, windowWidth/2 - 100, windowHeight-225);
 
   switch(optionSelected){
     case FIRST_OPTION:
       switchColor(1.0, 1.0, 0.0);
-      writeText(instructions1 + " (Pressione enter)", WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-275);
+      writeText(instructions1 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-275);
       switchColor(1.0, 1.0, 1.0);
-      writeText(instructions2, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
-      writeText(instructions3, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
-      writeText(instructions4, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     case SECOND_OPTION:
-      writeText(instructions1, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-275);
+      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
       switchColor(1.0, 1.0, 0.0);
-      writeText(instructions2 + " (Pressione enter)", WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
+      writeText(instructions2 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-300);
       switchColor(1.0, 1.0, 1.0);
-      writeText(instructions3, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
-      writeText(instructions4, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     case THIRD_OPTION:
-      writeText(instructions1, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-275);
-      writeText(instructions2, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
+      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
       switchColor(1.0, 1.0, 0.0);
-      writeText(instructions3 + " (Pressione enter)", WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
+      writeText(instructions3 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-325);
       switchColor(1.0, 1.0, 1.0);
-      writeText(instructions4, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     case FOURTH_OPTION:
-      writeText(instructions1, WINDOW_WIDTH/2- 150, WINDOW_HEIGHT-275);
-      writeText(instructions2, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
-      writeText(instructions3, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
+      writeText(instructions1, windowWidth/2- 150, windowHeight-275);
+      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
       switchColor(1.0, 1.0, 0.0);
-      writeText(instructions4 + " (Pressione enter)", WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
+      writeText(instructions4 + " (Pressione enter)", windowWidth/2 - 150, windowHeight-350);
       switchColor(1.0, 1.0, 1.0);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     default:
-      writeText(instructions1, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-275);
-      writeText(instructions2, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-300);
-      writeText(instructions3, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-325);
-      writeText(instructions4, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT-350);
+      writeText(instructions1, windowWidth/2 - 150, windowHeight-275);
+      writeText(instructions2, windowWidth/2 - 150, windowHeight-300);
+      writeText(instructions3, windowWidth/2 - 150, windowHeight-325);
+      writeText(instructions4, windowWidth/2 - 150, windowHeight-350);
       switchColor(1.0, 1.0, 0.0);
-      writeText(exit, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-395);
+      writeText(exit, windowWidth/2 - 80, windowHeight-395);
       break;
     }
 
@@ -438,41 +482,41 @@ void displayInstructions_EN(){
 
 
   switchColor(1.0, 1.0, 0.0);
-  writeText(firstTitle, WINDOW_WIDTH/2 - 350, WINDOW_HEIGHT-125);
-  writeText(secondTitle, WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-125);
+  writeText(firstTitle, windowWidth/2 - 350, windowHeight-125);
+  writeText(secondTitle, windowWidth/2 - 80, windowHeight-125);
 
   switchColor(0.01, 0.24, 0.85);
-  writeText(keymapsInstructions[0], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (0*20));
+  writeText(keymapsInstructions[0], windowWidth/2 - 340, windowHeight-150 - (0*20));
   switchColor(1.0, 1.0, 1.0);
-  writeText(keymapsInstructions[1], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (1*20));
-  writeText(keymapsInstructions[2], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (2*20));
-  writeText(keymapsInstructions[3], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (3*20));
-  writeText(keymapsInstructions[4], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (4*20));
-  writeText(keymapsInstructions[5], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (5*20));
+  writeText(keymapsInstructions[1], windowWidth/2 - 340, windowHeight-150 - (1*20));
+  writeText(keymapsInstructions[2], windowWidth/2 - 340, windowHeight-150 - (2*20));
+  writeText(keymapsInstructions[3], windowWidth/2 - 340, windowHeight-150 - (3*20));
+  writeText(keymapsInstructions[4], windowWidth/2 - 340, windowHeight-150 - (4*20));
+  writeText(keymapsInstructions[5], windowWidth/2 - 340, windowHeight-150 - (5*20));
   switchColor(1.0, 0.17, 0.05);
-  writeText(keymapsInstructions[6], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (6*20));
+  writeText(keymapsInstructions[6], windowWidth/2 - 340, windowHeight-150 - (6*20));
   switchColor(1.0, 1.0, 1.0);
-  writeText(keymapsInstructions[7], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (7*20));
-  writeText(keymapsInstructions[8], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (8*20));
-  writeText(keymapsInstructions[9], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (9*20));
-  writeText(keymapsInstructions[10], WINDOW_WIDTH/2 - 340, WINDOW_HEIGHT-150 - (10*20));
+  writeText(keymapsInstructions[7], windowWidth/2 - 340, windowHeight-150 - (7*20));
+  writeText(keymapsInstructions[8], windowWidth/2 - 340, windowHeight-150 - (8*20));
+  writeText(keymapsInstructions[9], windowWidth/2 - 340, windowHeight-150 - (9*20));
+  writeText(keymapsInstructions[10], windowWidth/2 - 340, windowHeight-150 - (10*20));
 
 
-  writeText(tutorial[0], WINDOW_WIDTH/2 -70, WINDOW_HEIGHT-150 - (0*20));
-  writeText(tutorial[1], WINDOW_WIDTH/2 -70, WINDOW_HEIGHT-150 - (1*20));
-  writeText(tutorial[2], WINDOW_WIDTH/2 -70, WINDOW_HEIGHT-150 - (2*20));
-  writeText(tutorial[3], WINDOW_WIDTH/2 -70, WINDOW_HEIGHT-150 - (3*20));
+  writeText(tutorial[0], windowWidth/2 -70, windowHeight-150 - (0*20));
+  writeText(tutorial[1], windowWidth/2 -70, windowHeight-150 - (1*20));
+  writeText(tutorial[2], windowWidth/2 -70, windowHeight-150 - (2*20));
+  writeText(tutorial[3], windowWidth/2 -70, windowHeight-150 - (3*20));
   switchColor(1.0, 0.0, 0.0);
-  writeText(tutorial[4], WINDOW_WIDTH/2 + 190, WINDOW_HEIGHT-150 - (3*20));
+  writeText(tutorial[4], windowWidth/2 + 190, windowHeight-150 - (3*20));
   switchColor(1.0, 1.0, 1.0);
-  writeText(tutorial[5], WINDOW_WIDTH/2 + 290, WINDOW_HEIGHT-150 - (3*20));
-  writeText(tutorial[6], WINDOW_WIDTH/2 -70, WINDOW_HEIGHT-150 - (4*20));
-  writeText(tutorial[7], WINDOW_WIDTH/2 -70, WINDOW_HEIGHT-150 - (5*20));
-  writeText(tutorial[8], WINDOW_WIDTH/2 -70, WINDOW_HEIGHT-150 - (6*20));
-  writeText(tutorial[9], WINDOW_WIDTH/2 -70, WINDOW_HEIGHT-150 - (7*20));
-  writeText(tutorial[10], WINDOW_WIDTH/2 -70, WINDOW_HEIGHT-150 - (8*20));
+  writeText(tutorial[5], windowWidth/2 + 290, windowHeight-150 - (3*20));
+  writeText(tutorial[6], windowWidth/2 -70, windowHeight-150 - (4*20));
+  writeText(tutorial[7], windowWidth/2 -70, windowHeight-150 - (5*20));
+  writeText(tutorial[8], windowWidth/2 -70, windowHeight-150 - (6*20));
+  writeText(tutorial[9], windowWidth/2 -70, windowHeight-150 - (7*20));
+  writeText(tutorial[10], windowWidth/2 -70, windowHeight-150 - (8*20));
 
-  writeText("Press esc to back", WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-450);
+  writeText("Press esc to back", windowWidth/2 - 80, windowHeight-450);
 
   glutSwapBuffers();
 }
@@ -511,44 +555,83 @@ void displayInstructions_PTBR(){
     };
 
   switchColor(1.0, 1.0, 0.0);
-  writeText(firstTitle, WINDOW_WIDTH/2 - 370, WINDOW_HEIGHT-125);
-  writeText(secondTitle, WINDOW_WIDTH/2 - 40, WINDOW_HEIGHT-125);
+  writeText(firstTitle, windowWidth/2 - 370, windowHeight-125);
+  writeText(secondTitle, windowWidth/2 - 40, windowHeight-125);
 
   switchColor(0.01, 0.24, 0.85);
-  writeText(keymapsInstructions[0], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (0*20));
+  writeText(keymapsInstructions[0], windowWidth/2 - 360, windowHeight-150 - (0*20));
   switchColor(1.0, 1.0, 1.0);
-  writeText(keymapsInstructions[1], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (1*20));
-  writeText(keymapsInstructions[2], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (2*20));
-  writeText(keymapsInstructions[3], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (3*20));
-  writeText(keymapsInstructions[4], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (4*20));
-  writeText(keymapsInstructions[5], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (5*20));
+  writeText(keymapsInstructions[1], windowWidth/2 - 360, windowHeight-150 - (1*20));
+  writeText(keymapsInstructions[2], windowWidth/2 - 360, windowHeight-150 - (2*20));
+  writeText(keymapsInstructions[3], windowWidth/2 - 360, windowHeight-150 - (3*20));
+  writeText(keymapsInstructions[4], windowWidth/2 - 360, windowHeight-150 - (4*20));
+  writeText(keymapsInstructions[5], windowWidth/2 - 360, windowHeight-150 - (5*20));
   switchColor(1.0, 0.17, 0.05);
-  writeText(keymapsInstructions[6], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (6*20));
+  writeText(keymapsInstructions[6], windowWidth/2 - 360, windowHeight-150 - (6*20));
   switchColor(1.0, 1.0, 1.0);
-  writeText(keymapsInstructions[7], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (7*20));
-  writeText(keymapsInstructions[8], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (8*20));
-  writeText(keymapsInstructions[9], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (9*20));
-  writeText(keymapsInstructions[10], WINDOW_WIDTH/2 - 360, WINDOW_HEIGHT-150 - (10*20));
+  writeText(keymapsInstructions[7], windowWidth/2 - 360, windowHeight-150 - (7*20));
+  writeText(keymapsInstructions[8], windowWidth/2 - 360, windowHeight-150 - (8*20));
+  writeText(keymapsInstructions[9], windowWidth/2 - 360, windowHeight-150 - (9*20));
+  writeText(keymapsInstructions[10], windowWidth/2 - 360, windowHeight-150 - (10*20));
 
 
-  writeText(tutorial[0], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (0*20));
-  writeText(tutorial[1], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (1*20));
-  writeText(tutorial[2], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (2*20));
-  writeText(tutorial[3], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (3*20));
-  writeText(tutorial[4], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (4*20));
+  writeText(tutorial[0], windowWidth/2 - 30, windowHeight-150 - (0*20));
+  writeText(tutorial[1], windowWidth/2 - 30, windowHeight-150 - (1*20));
+  writeText(tutorial[2], windowWidth/2 - 30, windowHeight-150 - (2*20));
+  writeText(tutorial[3], windowWidth/2 - 30, windowHeight-150 - (3*20));
+  writeText(tutorial[4], windowWidth/2 - 30, windowHeight-150 - (4*20));
   switchColor(1.0, 0.0, 0.0);
-  writeText(tutorial[5], WINDOW_WIDTH/2 + 110, WINDOW_HEIGHT-150 - (4*20));
+  writeText(tutorial[5], windowWidth/2 + 110, windowHeight-150 - (4*20));
   switchColor(1.0, 1.0, 1.0);
-  writeText(tutorial[6], WINDOW_WIDTH/2 + 180, WINDOW_HEIGHT-150 - (4*20));
-  writeText(tutorial[7], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (5*20));
-  writeText(tutorial[8], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (6*20));
-  writeText(tutorial[9], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (7*20));
-  writeText(tutorial[10], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (8*20));
-  writeText(tutorial[11], WINDOW_WIDTH/2 - 30, WINDOW_HEIGHT-150 - (9*20));
+  writeText(tutorial[6], windowWidth/2 + 180, windowHeight-150 - (4*20));
+  writeText(tutorial[7], windowWidth/2 - 30, windowHeight-150 - (5*20));
+  writeText(tutorial[8], windowWidth/2 - 30, windowHeight-150 - (6*20));
+  writeText(tutorial[9], windowWidth/2 - 30, windowHeight-150 - (7*20));
+  writeText(tutorial[10], windowWidth/2 - 30, windowHeight-150 - (8*20));
+  writeText(tutorial[11], windowWidth/2 - 30, windowHeight-150 - (9*20));
 
-  writeText("Pressione esc para voltar", WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT-450);
+  writeText("Pressione esc para voltar", windowWidth/2 - 80, windowHeight-450);
 
   glutSwapBuffers();
+}
+
+void timer(int value){
+  glutPostRedisplay();
+  glutTimerFunc(1000/FPS, timer, 0);
+
+  switch(player1Direction){
+    case UP:
+      player1->move(UP);
+      break;
+    case DOWN:
+      player1->move(DOWN);
+      break;
+    case LEFT:
+      player1->move(LEFT);
+      break;
+    case RIGHT:
+      player1->move(RIGHT);
+      break;
+    default:
+      break;
+  }
+
+  switch(player2Direction){
+    case UP:
+      player2->move(UP);
+      break;
+    case DOWN:
+      player2->move(DOWN);
+      break;
+    case LEFT:
+      player2->move(LEFT);
+      break;
+    case RIGHT:
+      player2->move(RIGHT);
+      break;
+    default:
+      break;
+  }
 }
 
 void writeText(string text, int x, int y){
@@ -589,7 +672,7 @@ void changeScreen(int identifier){
       glutReshapeFunc(reshapeInGame);
       glutDisplayFunc(displayGame2Players);
       glutPostRedisplay();
-      reshapeInGame(WINDOW_WIDTH, WINDOW_HEIGHT);
+      reshapeInGame(windowWidth, windowHeight);
       break;
     default:
       break;
