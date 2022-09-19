@@ -28,15 +28,18 @@ class Player{
     vector<TrailNode> getTrail();
     void setCoordenate(float x, float y);
     void move(int direction);
-    void render(GLuint object, float r, float g, float b, float translateX, float translateY, float translateZ);
+    void render(GLuint object, float r, float g, float b, float scaleX, float scaleY, float scaleZ);
     void renderSphere(float r, float g, float b, float scaleX, float scaleY, float scaleZ);
+    void renderCube(float r, float g, float b, float scaleX, float scaleY, float scaleZ);
+    void resetTrail();
     void renderTrail();
     void showTrail();
 };
 
-void Player::render(GLuint object, float r, float g, float b, float translateX, float translateY, float translateZ) {
+void Player::render(GLuint object, float r, float g, float b, float scaleX, float scaleY, float scaleZ) {
   glPushMatrix();
-    glTranslatef(translateX, translateY, translateZ);
+    glTranslatef(this->xCoordenate, this->yCoordenate, 0);
+    glScalef(scaleX, scaleY, scaleZ);
     glColor3f(r, g, b);
     glCallList(object);
   glPopMatrix();
@@ -54,6 +57,21 @@ void Player::renderSphere(float r, float g, float b, float scaleX, float scaleY,
     glScalef(scaleX, scaleY, scaleZ);
     glColor3f(r, g, b);
     glutSolidSphere(1, 50, 50);
+  glPopMatrix();
+}
+
+void Player::renderCube(float r, float g, float b, float scaleX, float scaleY, float scaleZ){
+  color[0] = r;
+  color[1] = g;
+  color[2] = b;
+  scale[0] = scaleX;
+  scale[1] = scaleY;
+  scale[2] = scaleZ;
+  glPushMatrix();
+    glTranslatef(this->xCoordenate, this->yCoordenate, 0);
+    glScalef(scaleX, scaleY, scaleZ);
+    glColor3f(r, g, b);
+    glutSolidCube(1);
   glPopMatrix();
 }
 
@@ -109,15 +127,7 @@ void Player::showTrail(){
     cout << "Trail node " << i << ": xy(" << trail[i].getXCoordenate() << ", " << trail[i].getYCoordenate() << ")" << endl;
   }
 }
-// void drawPorshe() {
-//     glPushMatrix();
-//     glTranslatef(0, -20.0,-105);
-//     glColor3f(0,1,1);
-//     // glScalef(0.5,0.5,0.5);
-//     glScalef(0.5,0.5,0.5);
-//     glRotatef(porsheRot,0,1,0);
-//     glCallList(porshe);
-//     glPopMatrix();
-//     porsheRot=porsheRot+0.6;
-//     if(porsheRot>360)porsheRot=porsheRot-360;
-// }
+
+void Player::resetTrail(){
+  this->trail.clear();
+}

@@ -52,7 +52,7 @@ void TrailNode::render(float r, float g, float b, float scaleX, float scaleY, fl
   glPushMatrix();
     glTranslatef(this->xCoordenate, this->yCoordenate, 0);
     glColor3f(r, g, b);
-    glScalef(scaleX*0.8, scaleY*0.8, scaleZ*0.8);
+    glScalef(scaleX*0.5, scaleY*0.5, scaleZ*0.5);
     glutSolidSphere(1, 50, 50);
   glPopMatrix();
 }
