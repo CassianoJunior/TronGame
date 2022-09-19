@@ -1,10 +1,14 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <algorithm>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+
+#define INITIAL_COORDENATE_X 60
+#define INITIAL_COORDENATE_Y 0
 
 // Collisions identifiers defines
 #define NO_COLLISION 0
@@ -66,8 +70,27 @@ void renderScenario(int width, int height){
 
 int hadSomeCollision(Player* player1, Player* player2){
   if(player1->getXCoordenate() == player2->getXCoordenate() && player1->getYCoordenate() == player2->getYCoordenate()){
-    int winner = rand() % 2;
-    return winner == 0 ? COLLISION_PLAYER_1 : COLLISION_PLAYER_2;
+    int randomNumber = rand() % 2;
+    return randomNumber == 0 ? COLLISION_PLAYER_1 : COLLISION_PLAYER_2;
+  } 
+
+  for (int i = 0; i < (int) player2->getTrail().size() - 1; i++) {
+    int x1 = player1->getTrail()[i].getXCoordenate();
+    int y1 = player1->getTrail()[i].getYCoordenate();
+
+    int x2 = player2->getTrail()[i].getXCoordenate();
+    int y2 = player2->getTrail()[i].getYCoordenate();
+
+    bool player1CollideWithPlayer2Trail = player1->getXCoordenate() == x2 && player1->getYCoordenate() == y2;
+    bool player1CollideWithOwnTrail = player1->getXCoordenate() == x1 && player1->getYCoordenate() == y1;
+
+    bool player2CollideWithPlayer1Trail = player2->getXCoordenate() == x1 && player2->getYCoordenate() == y1;
+    bool player2CollideWithOwnTrail = player2->getXCoordenate() == x2 && player2->getYCoordenate() == y2;
+
+    if(player1CollideWithPlayer2Trail || player1CollideWithOwnTrail) return COLLISION_PLAYER_1;
+
+    if(player2CollideWithOwnTrail || player2CollideWithPlayer1Trail) return COLLISION_PLAYER_2;
+
   }
 
   return NO_COLLISION;
