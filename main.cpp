@@ -62,8 +62,8 @@ int windowHeight = WINDOW_HEIGHT; // Window height
 GLuint ducati; // Ducati object model
 Player* player1 = new Player(); // Player 1
 Player* player2 = new Player(); // Player 2
-int player1Direction = RIGHT; // Player 1 direction
-int player2Direction = LEFT; // Player 2 direction
+int player1Direction; // Player 1 direction
+int player2Direction; // Player 2 direction
 bool gameover = false; // Flag to check if the game is over
 bool playerIsWinner = false; // Flag to check who is the winner | true = player 1 | false = player 2
 bool hasPlayer2 = false; // Flag to check if the game is single player or versus computer
@@ -74,6 +74,7 @@ void init(void);
 void reset();
 void resetPlayers(void);
 void reshape(int w, int h);
+
 // Display functions
 void welcomeDisplay_EN(void);
 void welcomeDisplay_PTBR(void);
@@ -112,7 +113,7 @@ int main(int argc, char** argv) {
   glutTimerFunc(0, idle, 0);
 
   ducati = loadObj("./models/38-ducati/Ducati/x-bikerduc.obj");
-  sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
+  // sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
 
   glutMainLoop();
 
@@ -331,17 +332,17 @@ void displayGame2Players(){
   // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
 
+  reshape(windowWidth, windowHeight);
   renderScenario(windowWidth, windowHeight);
+  reshapeInGame(windowWidth, windowHeight);
 
   // player1->render(ducati, 0.01, 0.24, 0.85, 1, 1, 1);
   // player2->render(ducati, 1.0, 0.17, 0.05, 1, 1, 1);
 
   player1->renderSphere(0.01, 0.24, 0.85, 1.2, 1.2, 1.2);
-  // player1->renderTrail();
   player2->renderSphere(1.0, 0.17, 0.05, 1.2, 1.2, 1.2);
-  // player2->renderTrail();
 
-  // cout << "Player1 xy(" << player1->getXCoordenate() << "," << player1->getYCoordenate() << ")" << endl;
+  cout << "Player1 xy(" << player1->getXCoordenate() << "," << player1->getYCoordenate() << ")" << endl;
   // player1->showTrail();
   // cout << "Player2 xy(" << player2->getXCoordenate() << "," << player2->getYCoordenate() << ")" << endl;
   // player2->showTrail();
@@ -707,10 +708,15 @@ void displayGameOver_PTBR(){
       winner = "Vencedor: Computador";
     }
   }
+
+  char player1Score[30];
+  char player2Score[30];
+  sprintf(player1Score, "Jogador 1: %d", score1);
+  sprintf(player2Score, "Jogador 2: %d", score2);
   string scores[3] = {
     "Placar:",
-    "Jogador 1: " + score1,
-    "Jogador 2: " + score2
+    player1Score,
+    player2Score
   };
   string instructions = "Pressione esc para voltar para o menu ou pressione enter para jogar de novo";
 
