@@ -14,6 +14,11 @@
 #define NO_COLLISION 0
 #define COLLISION_PLAYER_1 1
 #define COLLISION_PLAYER_2 2
+#define LEFT_EDGE_X -97
+#define RIGHT_EDGE_X 97
+#define TOP_EDGE_Y 73
+#define BOTTOM_EDGE_Y -73
+
 
 void renderScenario(int width, int height);
 int hadSomeCollision(Player* player1, Player* player2);
@@ -92,6 +97,21 @@ int hadSomeCollision(Player* player1, Player* player2){
     if(player2CollideWithOwnTrail || player2CollideWithPlayer1Trail) return COLLISION_PLAYER_2;
 
   }
-
+  
+  if(((player1->getXCoordenate() >= LEFT_EDGE_X || player1->getXCoordenate() <= RIGHT_EDGE_X) && player1->getYCoordenate() == TOP_EDGE_Y) ||
+     ((player1->getXCoordenate() >= LEFT_EDGE_X || player1->getXCoordenate() <= RIGHT_EDGE_X) && player1->getYCoordenate() == BOTTOM_EDGE_Y) ||
+     ((player1->getYCoordenate() >= BOTTOM_EDGE_Y || player1->getYCoordenate() <= TOP_EDGE_Y) && player1->getXCoordenate() == LEFT_EDGE_X) ||
+	 ((player1->getYCoordenate() >= BOTTOM_EDGE_Y || player1->getYCoordenate() <= TOP_EDGE_Y) && player1->getXCoordenate() == RIGHT_EDGE_X)){
+	  return COLLISION_PLAYER_1;
+  }
+  
+  
+  if(((player2->getXCoordenate() >= LEFT_EDGE_X || player2->getXCoordenate() <= RIGHT_EDGE_X) && player2->getYCoordenate() == TOP_EDGE_Y) ||
+     ((player2->getXCoordenate() >= LEFT_EDGE_X || player2->getXCoordenate() <= RIGHT_EDGE_X) && player2->getYCoordenate() == BOTTOM_EDGE_Y) ||
+     ((player2->getYCoordenate() >= BOTTOM_EDGE_Y || player2->getYCoordenate() <= TOP_EDGE_Y) && player2->getXCoordenate() == LEFT_EDGE_X) ||
+	 ((player2->getYCoordenate() >= BOTTOM_EDGE_Y || player2->getYCoordenate() <= TOP_EDGE_Y) && player2->getXCoordenate() == RIGHT_EDGE_X)){
+	  return COLLISION_PLAYER_2;
+  }
+  
   return NO_COLLISION;
 }

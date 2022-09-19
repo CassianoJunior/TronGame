@@ -341,7 +341,7 @@ void displayGame2Players(){
   player2->renderSphere(1.0, 0.17, 0.05, 1.2, 1.2, 1.2);
   // player2->renderTrail();
 
-  // cout << "Player1 xy(" << player1->getXCoordenate() << "," << player1->getYCoordenate() << ")" << endl;
+  //cout << "Player1 xy(" << player1->getXCoordenate() << "," << player1->getYCoordenate() << ")" << endl;
   // player1->showTrail();
   // cout << "Player2 xy(" << player2->getXCoordenate() << "," << player2->getYCoordenate() << ")" << endl;
   // player2->showTrail();
