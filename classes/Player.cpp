@@ -30,6 +30,7 @@ class Player{
     void move(int direction);
     void render(GLuint object, float r, float g, float b, float scaleX, float scaleY, float scaleZ);
     void renderSphere(float r, float g, float b, float scaleX, float scaleY, float scaleZ);
+    void resetTrail();
     void renderTrail();
     void showTrail();
 };
@@ -110,6 +111,11 @@ void Player::showTrail(){
     cout << "Trail node " << i << ": xy(" << trail[i].getXCoordenate() << ", " << trail[i].getYCoordenate() << ")" << endl;
   }
 }
+
+void Player::resetTrail(){
+  this->trail.clear();
+}
+
 // void drawPorshe() {
 //     glPushMatrix();
 //     glTranslatef(0, -20.0,-105);

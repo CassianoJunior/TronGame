@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
   glutTimerFunc(0, idle, 0);
 
   ducati = loadObj("./models/38-ducati/Ducati/x-bikerduc.obj");
-  // sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
+  sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
 
   glutMainLoop();
 
@@ -133,8 +133,10 @@ void reset() {
 }
 
 void resetPlayers(){
-  player1->setCoordenate(-60, 0);
-  player2->setCoordenate(60, 0);
+  player1->setCoordenate(-INITIAL_COORDENATE_X, INITIAL_COORDENATE_Y);
+  player2->setCoordenate(INITIAL_COORDENATE_X, INITIAL_COORDENATE_Y);
+  player1->resetTrail();
+  player2->resetTrail();
   player1Direction = RIGHT;
   player2Direction = LEFT;
   gameover = false;
