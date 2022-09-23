@@ -1,3 +1,6 @@
+#ifndef OBJLOADER_H
+#define OBJLOADER_H
+
 #include <iostream>
 #include <stdio.h>
 
@@ -40,3 +43,5 @@ GLuint loadObj(char* fname){
 
     return object;
 }
+
+#endif

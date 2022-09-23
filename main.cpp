@@ -8,7 +8,8 @@
 #include <Windows.h>
 #include <MMSystem.h>
 
-#include "./classes/Player.cpp"
+#include "./classes/Player.h"
+#include "./classes/Computer.h"
 #include "./libraries/OBJLoader.h"
 #include "./libraries/gameFunctions.h"
 
@@ -62,6 +63,7 @@ int windowHeight = WINDOW_HEIGHT; // Window height
 GLuint ducati; // Ducati object model
 Player* player1 = new Player(); // Player 1
 Player* player2 = new Player(); // Player 2
+Computer* pc = new Computer(); // Computer 
 int player1Direction; // Player 1 direction
 int player2Direction; // Player 2 direction
 bool gameover = false; // Flag to check if the game is over
@@ -136,10 +138,13 @@ void reset() {
 void resetPlayers(){
   player1->setCoordenate(-INITIAL_COORDENATE_X, INITIAL_COORDENATE_Y);
   player2->setCoordenate(INITIAL_COORDENATE_X, INITIAL_COORDENATE_Y);
+  pc->setCoordenate(INITIAL_COORDENATE_X, INITIAL_COORDENATE_Y);
   player1->resetTrail();
   player2->resetTrail();
-  player1Direction = RIGHT;
+  pc->resetTrail();
+  player1Direction = 5;
   player2Direction = LEFT;
+  pc->setActualDirection(LEFT);
   gameover = false;
 }
 
@@ -165,8 +170,8 @@ void reshapeInGame(int w, int h) {
 
   glViewport(0, 0, w, h); 
 
-  gluPerspective(60, (GLfloat) w / (GLfloat) h, 0.0, 150.0);
-  gluLookAt(0.0, 0.0, 130.0,
+  gluPerspective(60, (GLfloat) w / (GLfloat) h, 0.0, 170.0);
+  gluLookAt(30.0, -150.0, 150.0,
             0.0, 0.0, 0.0, 
             0.0, 2.0, 3.0);
 
@@ -332,21 +337,36 @@ void displayGame2Players(){
   // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
 
-  reshape(windowWidth, windowHeight);
-  renderScenario(windowWidth, windowHeight);
-  reshapeInGame(windowWidth, windowHeight);
+  // reshape(windowWidth, windowHeight);
+  // renderScenarioOrtho(windowWidth, windowHeight);
+  // reshapeInGame(windowWidth, windowHeight);
 
-  // player1->render(ducati, 0.01, 0.24, 0.85, 1, 1, 1);
-  // player2->render(ducati, 1.0, 0.17, 0.05, 1, 1, 1);
+  renderScenarioPerspective(windowWidth, windowHeight);
+
+  // player1->render(ducati, 0.01, 0.24, 0.85, 0.15, 0.15, 0.15);
+  // player2->render(ducati, 1.0, 0.17, 0.05, 0.15, 0.15, 0.15);
+  // player1->render(ducati, 0.01, 0.24, 0.85, 0.4, 0.4, 0.4);
+  // player2->render(ducati, 1.0, 0.17, 0.05, 0.4, 0.4, 0.4);
 
   player1->renderSphere(0.01, 0.24, 0.85, 1.2, 1.2, 1.2);
-  player2->renderSphere(1.0, 0.17, 0.05, 1.2, 1.2, 1.2);
+  hasPlayer2 
+    ? player2->renderSphere(1.0, 0.17, 0.05, 1.2, 1.2, 1.2) 
+    : pc->renderSphere(1.0, 0.17, 0.05, 1.2, 1.2, 1.2);
 
-  //cout << "Player1 xy(" << player1->getXCoordenate() << "," << player1->getYCoordenate() << ")" << endl;
+  // cout << "Player1 xy(" << player1->getXCoordenate() << "," << player1->getYCoordenate() << ")" << endl;
   // player1->showTrail();
   // cout << "Player2 xy(" << player2->getXCoordenate() << "," << player2->getYCoordenate() << ")" << endl;
   // player2->showTrail();
-  int code = hadSomeCollision(player1, player2);
+
+  if(!hasPlayer2) {
+    // computerAction(pc, player1);
+    // pc->showTrail();
+  }
+
+  int code = hasPlayer2 
+              ? hadSomeCollision(player1, player2)
+              : hadSomeCollision(player1, pc);
+
   switch(code){
     case NO_COLLISION:
       break;
@@ -669,8 +689,8 @@ void displayGameOver_EN(){
 
   char player1Score[30];
   char player2Score[30];
-  sprintf(player1Score, "Player 1: %d", score1);
-  sprintf(player2Score, "Player 2: %d", score2);
+  hasPlayer2 ? sprintf(player1Score, "Player 1: %d", score1) : sprintf(player1Score, "Player: %d", score1);
+  hasPlayer2 ? sprintf(player2Score, "Player 2: %d", score2) : sprintf(player2Score, "Computer: %d", score2);; 
 
   string scores[3] = {
     "Scores:",
@@ -711,8 +731,8 @@ void displayGameOver_PTBR(){
 
   char player1Score[30];
   char player2Score[30];
-  sprintf(player1Score, "Jogador 1: %d", score1);
-  sprintf(player2Score, "Jogador 2: %d", score2);
+  hasPlayer2 ? sprintf(player1Score, "Jogador 1: %d", score1) : sprintf(player1Score, "Jogador: %d", score1);
+  hasPlayer2 ? sprintf(player2Score, "Jogador 2: %d", score2) : sprintf(player2Score, "Computador: %d", score2);
   string scores[3] = {
     "Placar:",
     player1Score,
@@ -756,22 +776,27 @@ void timer(int value){
         break;
     }
 
-    switch(player2Direction){
-      case UP:
-        player2->move(UP);
-        break;
-      case DOWN:
-        player2->move(DOWN);
-        break;
-      case LEFT:
-        player2->move(LEFT);
-        break;
-      case RIGHT:
-        player2->move(RIGHT);
-        break;
-      default:
-        break;
+    if(hasPlayer2){
+      switch(player2Direction){
+        case UP:
+          player2->move(UP);
+          break;
+        case DOWN:
+          player2->move(DOWN);
+          break;
+        case LEFT:
+          player2->move(LEFT);
+          break;
+        case RIGHT:
+          player2->move(RIGHT);
+          break;
+        default:
+          break;
+      }
+    } else {
+      pc->move(pc->getActualDirection());
     }
+    
   }
 }
 

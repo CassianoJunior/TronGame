@@ -1,3 +1,6 @@
+#ifndef TRAILNODE_H
+#define TRAILNODE_H
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -56,3 +59,5 @@ void TrailNode::render(float r, float g, float b, float scaleX, float scaleY, fl
     glutSolidSphere(1, 50, 50);
   glPopMatrix();
 }
+
+#endif

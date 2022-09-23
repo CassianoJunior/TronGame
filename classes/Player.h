@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -5,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-#include "TrailNode.cpp"
+#include "TrailNode.h"
 
 // Direction indentifiers defines
 #define UP 0
@@ -15,7 +18,7 @@
 
 #define DEFAULT_DISPLACEMENT 1
 class Player{
-  private:
+  protected:
     int xCoordenate;
     int yCoordenate;
     vector<TrailNode> trail;
@@ -53,10 +56,10 @@ void Player::renderSphere(float r, float g, float b, float scaleX, float scaleY,
   scale[1] = scaleY;
   scale[2] = scaleZ;
   glPushMatrix();
-    glTranslatef(this->xCoordenate, this->yCoordenate, 0);
+    glTranslatef(this->xCoordenate, this->yCoordenate, 1);
     glScalef(scaleX, scaleY, scaleZ);
     glColor3f(r, g, b);
-    glutSolidSphere(1, 50, 50);
+    glutWireSphere(1, 50, 50);
   glPopMatrix();
 }
 
@@ -131,3 +134,5 @@ void Player::showTrail(){
 void Player::resetTrail(){
   this->trail.clear();
 }
+
+#endif
