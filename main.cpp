@@ -146,7 +146,7 @@ void resetPlayers(){
   // player2Direction = LEFT;
   player1->setDirection(RIGHT);
   player2->setDirection(LEFT);
-  pc->setActualDirection(UP);
+  pc->setActualDirection(LEFT);
   gameover = false;
 }
 
@@ -342,7 +342,6 @@ void displayGame2Players(){
 
   if(!hasPlayer2) {
     computerAction(pc, player1);
-    cout << "Computer direction" << pc->getDirection() << endl;
     // pc->showTrail();
   }
 
@@ -361,7 +360,7 @@ void displayGame2Players(){
       changeScreen(GAME_OVER_SCREEN);
       break;
     case COLLISION_PLAYER_2:
-      cout << "Player 2 colidiu" << endl;
+      hasPlayer2 ? cout << "Player 2 colidiu" << endl : cout << "Computer colidiu" << endl;
       gameover = true;
       playerIsWinner = true;
       score1 += 1;
@@ -779,19 +778,19 @@ void timer(int value){
     } else {
       switch(pc->getActualDirection()){
         case UP:
-          cout << "Computer UP" << endl;
+          // cout << "Computer UP" << endl;
           pc->move(UP);
           break;
         case DOWN:
-          cout << "Computer DOWN" << endl;
+          // cout << "Computer DOWN" << endl;
           pc->move(DOWN);
           break;
         case LEFT:
-          cout << "Computer LEFT" << endl;
+          // cout << "Computer LEFT" << endl;
           pc->move(LEFT);
           break;
         case RIGHT:
-          cout << "Computer RIGHT" << endl;
+          // cout << "Computer RIGHT" << endl;
           pc->move(RIGHT);
           break;
         default:

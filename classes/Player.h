@@ -99,7 +99,15 @@ int Player::getDirection(){
 }
 
 void Player::setDirection(int direction){
-  this->direction = direction;
+  if(direction == UP && this->direction != DOWN){
+    this->direction = direction;
+  } else if(direction == DOWN && this->direction != UP){
+    this->direction = direction;
+  } else if(direction == LEFT && this->direction != RIGHT){
+    this->direction = direction;
+  } else if(direction == RIGHT && this->direction != LEFT){
+    this->direction = direction;
+  }
 }
 
 void Player::move(int direction){
