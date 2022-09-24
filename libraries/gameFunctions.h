@@ -31,6 +31,10 @@ void renderScenarioOrtho(int width, int height);
 void renderScenarioPerspective(int width, int height);
 int hadSomeCollision(Player* player1, Player* player2);
 void computerAction(Computer* computer, Player* player);
+int changeDirectionUp(Computer* computer, Player* player);
+int changeDirectionDown(Computer* computer, Player* player);
+int changeDirectionLeft(Computer* computer, Player* player);
+int changeDirectionRight(Computer* computer, Player* player);
 
 void renderScenarioOrtho(int width, int height){
   //Top edge
@@ -150,7 +154,7 @@ int hadSomeCollision(Player* player1, Player* player2){
 
   if(player2CollideWithEdges) return COLLISION_PLAYER_2;
 
-  for (int i = 0; i < (int) player2->getTrail().size() - 1; i++) {
+  for (int i = 0; i < (int) player1->getTrail().size() - 1; i++) {
     int x1 = player1->getTrail()[i].getXCoordenate();
     int y1 = player1->getTrail()[i].getYCoordenate();
     // cout << "xy("<< x1 << "," << y1 << ")" << endl;
@@ -174,172 +178,350 @@ int hadSomeCollision(Player* player1, Player* player2){
 }
 
 void computerAction(Computer* computer, Player* player){
+  switch(computer->getActualDirection()){
+    case UP:
+      {
+        int choice = changeDirectionUp(computer, player);
+        if(choice == UP){
+          computer->setActualDirection(UP);
+        } else if(choice == LEFT){
+          computer->setActualDirection(LEFT);
+        } else if(choice == RIGHT){
+          computer->setActualDirection(RIGHT);
+        }
+        break;
+      }
+    case DOWN:
+      {
+        int choice = changeDirectionDown(computer, player);
+        if(choice == DOWN){
+          computer->setActualDirection(DOWN);
+        } else if(choice == LEFT){
+          computer->setActualDirection(LEFT);
+        } else if(choice == RIGHT){
+          computer->setActualDirection(RIGHT);
+        }
+        break;
+      }
+    case LEFT:
+      {
+        int choice = changeDirectionLeft(computer, player);
+        if(choice == LEFT){
+          computer->setActualDirection(LEFT);
+        } else if(choice == UP){
+          computer->setActualDirection(UP);
+        } else if(choice == DOWN){
+          computer->setActualDirection(DOWN);
+        }
+        break;
+      }
+    case RIGHT:
+      {
+        int choice = changeDirectionRight(computer, player);
+        if(choice == RIGHT){
+          computer->setActualDirection(RIGHT);
+        } else if(choice == UP){
+          computer->setActualDirection(UP);
+        } else if(choice == DOWN){
+          computer->setActualDirection(DOWN);
+        }
+        break;
+      }
+    default:
+      break;
+  }
+}
+
+int changeDirectionUp(Computer* computer, Player* player){
   int topEdgeDistance = abs(TOP_EDGE_Y - computer->getYCoordenate());
-  int bottomEdgeDistance = abs(BOTTOM_EDGE_Y - computer->getYCoordenate());
   int leftEdgeDistance = abs(LEFT_EDGE_X - computer->getXCoordenate());
   int rightEdgeDistance = abs(RIGHT_EDGE_X - computer->getXCoordenate());
+  
+  // Maior distancia possivel = de uma borda a outra
+  int ownNearestTrailNodeUp = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no acima mais proximo da propria trilha 
+  int playerNearestTrailNodeUp = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no acima mais proximo da trilha do player
+  int ownNearestTrailNodeLeft = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à esquerda mais proximo da propria trilha
+  int playerNearestTrailNodeLeft = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à esquerda mais proximo da trilha do player
+  int ownNearestTrailNodeRight = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à direita mais proximo da propria trilha
+  int playerNearestTrailNodeRight = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à direita mais proximo da trilha do player
 
-  int lowerDistanceOwnTrailUp = 0;// Proprio rastro acima
-  int lowerDistanceOwnTrailDown = 0;// Proprio rastro abaixo
-  int lowerDistanceOwnTrailRight = 0;// Proprio rastro a direita
-  int lowerDistanceOwnTrailLeft = 0;// Proprio rastro a esquerda
-
-  int lowerDistanceOponentTrailUp = 0;// Rastro do oponente acima
-  int lowerDistanceOponentTrailDown = 0;// Rastro do oponente abaixo
-  int lowerDistanceOponentTrailRight = 0;// Rastro do oponente a direita
-  int lowerDistanceOponentTrailLeft = 0;// Rastro do oponente a esquerda
-
-  for (int i = 0; i < (int)computer->getTrail().size() - 1; i++){
+  for(int i = 0; i < (int)player->getTrail().size(); i++){
     TrailNode actualOwnTrailNode = computer->getTrail()[i];
-    TrailNode actualOponentTrailNode = player->getTrail()[i];
-
-    int yDistanceOwnTrailNode = abs(actualOwnTrailNode.getYCoordenate() - computer->getYCoordenate());
-    int xDistanceOwnTrailNode = abs(actualOwnTrailNode.getXCoordenate() - computer->getXCoordenate());
-    int yDistanceOponentTrailNode = abs(actualOponentTrailNode.getYCoordenate() - computer->getYCoordenate());
-    int xDistanceOponentTrailNode = abs(actualOponentTrailNode.getXCoordenate() - computer->getXCoordenate());
-
-    if(i == 0){
-      lowerDistanceOwnTrailUp = yDistanceOwnTrailNode;
-      lowerDistanceOwnTrailDown = yDistanceOwnTrailNode;
-      lowerDistanceOwnTrailRight = xDistanceOwnTrailNode;
-      lowerDistanceOwnTrailLeft = xDistanceOwnTrailNode;
-      lowerDistanceOponentTrailUp = yDistanceOponentTrailNode;
-      lowerDistanceOponentTrailDown = yDistanceOponentTrailNode;
-      lowerDistanceOponentTrailRight = xDistanceOponentTrailNode;
-      lowerDistanceOponentTrailLeft = xDistanceOponentTrailNode;
-
-      cout << "lowerDistanceOwnTrailUp: " << lowerDistanceOwnTrailUp << endl;
-      cout << "lowerDistanceOwnTrailDown: " << lowerDistanceOwnTrailDown << endl;
-      cout << "lowerDistanceOwnTrailRight: " << lowerDistanceOwnTrailRight << endl;
-      cout << "lowerDistanceOwnTrailLeft: " << lowerDistanceOwnTrailLeft << endl;
-      cout << "lowerDistanceOponentTrailUp: " << lowerDistanceOponentTrailUp << endl;
-      cout << "lowerDistanceOponentTrailDown: " << lowerDistanceOponentTrailDown << endl;
-      cout << "lowerDistanceOponentTrailRight: " << lowerDistanceOponentTrailRight << endl;
-      cout << "lowerDistanceOponentTrailLeft: " << lowerDistanceOponentTrailLeft << endl;
+    TrailNode actualPlayerTrailNode = player->getTrail()[i];
+    
+    bool ownTrailNodeAbove = actualOwnTrailNode.getYCoordenate() > computer->getYCoordenate() && actualOwnTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool playerTrailNodeAbove = actualPlayerTrailNode.getYCoordenate() > computer->getYCoordenate() && actualPlayerTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool ownTrailNodeLeft = actualOwnTrailNode.getXCoordenate() < computer->getXCoordenate() && actualOwnTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool playerTrailNodeLeft = actualPlayerTrailNode.getXCoordenate() < computer->getXCoordenate() && actualPlayerTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool ownTrailNodeRight = actualOwnTrailNode.getXCoordenate() > computer->getXCoordenate() && actualOwnTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool playerTrailNodeRight = actualPlayerTrailNode.getXCoordenate() > computer->getXCoordenate() && actualPlayerTrailNode.getYCoordenate() == computer->getYCoordenate();
+    
+    if(ownTrailNodeAbove || playerTrailNodeAbove){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getYCoordenate() - computer->getYCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getYCoordenate() - computer->getYCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeUp) ownNearestTrailNodeUp = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeUp) playerNearestTrailNodeUp = playerTrailNodeDistance;
     }
 
-    if(actualOwnTrailNode.getYCoordenate() > computer->getYCoordenate()){
-      if(actualOwnTrailNode.getXCoordenate() == computer->getXCoordenate() 
-      && yDistanceOwnTrailNode < lowerDistanceOwnTrailUp) lowerDistanceOwnTrailUp = yDistanceOwnTrailNode;
-    } else {
-      if(actualOwnTrailNode.getXCoordenate() == computer->getXCoordenate()
-      && yDistanceOwnTrailNode < lowerDistanceOwnTrailDown) lowerDistanceOwnTrailDown = yDistanceOwnTrailNode;
+    if(ownTrailNodeLeft || playerTrailNodeLeft){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getXCoordenate() - computer->getXCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getXCoordenate() - computer->getXCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeLeft) ownNearestTrailNodeLeft = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeLeft) playerNearestTrailNodeLeft = playerTrailNodeDistance;
     }
 
-    if(actualOwnTrailNode.getXCoordenate() < computer->getXCoordenate()){
-      if(actualOwnTrailNode.getYCoordenate() == computer->getYCoordenate()
-      && xDistanceOwnTrailNode < lowerDistanceOwnTrailRight) lowerDistanceOwnTrailRight = xDistanceOwnTrailNode;
-    } else {
-      if(actualOwnTrailNode.getYCoordenate() == computer->getYCoordenate()
-      && xDistanceOwnTrailNode < lowerDistanceOwnTrailLeft) lowerDistanceOwnTrailLeft = xDistanceOwnTrailNode;
-    }
-
-    if(actualOponentTrailNode.getYCoordenate() > computer->getYCoordenate()){
-      if(actualOponentTrailNode.getXCoordenate() == computer->getXCoordenate()
-      && yDistanceOponentTrailNode < lowerDistanceOponentTrailUp) lowerDistanceOponentTrailUp = yDistanceOponentTrailNode;
-    } else {
-      if(actualOponentTrailNode.getXCoordenate() == computer->getXCoordenate()
-      && yDistanceOponentTrailNode < lowerDistanceOponentTrailDown) lowerDistanceOponentTrailDown = yDistanceOponentTrailNode;
-    }
-
-    if(actualOponentTrailNode.getXCoordenate() > computer->getXCoordenate()) {
-      if(actualOponentTrailNode.getYCoordenate() == computer->getYCoordenate()
-      && xDistanceOponentTrailNode > lowerDistanceOponentTrailRight) lowerDistanceOponentTrailRight = xDistanceOponentTrailNode;
-    } else {
-      if(actualOponentTrailNode.getYCoordenate() == computer->getYCoordenate()
-      && xDistanceOponentTrailNode > lowerDistanceOponentTrailLeft) lowerDistanceOponentTrailLeft = xDistanceOponentTrailNode;
+    if(ownTrailNodeRight || playerTrailNodeRight){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getXCoordenate() - computer->getXCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getXCoordenate() - computer->getXCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeRight) ownNearestTrailNodeRight = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeRight) playerNearestTrailNodeRight = playerTrailNodeDistance;
     }
   }
 
   int firstImpactUp = topEdgeDistance;
-  if(lowerDistanceOponentTrailUp < firstImpactUp) firstImpactUp = lowerDistanceOponentTrailUp;
-  if(lowerDistanceOwnTrailUp < firstImpactUp) firstImpactUp = lowerDistanceOwnTrailUp;
-
-  int firstImpactDown = bottomEdgeDistance;
-  if(lowerDistanceOponentTrailDown < firstImpactDown) firstImpactDown = lowerDistanceOponentTrailDown;
-  if(lowerDistanceOwnTrailDown > firstImpactDown) firstImpactDown = lowerDistanceOwnTrailDown;
-
-  int firstImpactRight = rightEdgeDistance;
-  if(lowerDistanceOponentTrailRight < firstImpactRight) firstImpactRight = lowerDistanceOponentTrailRight;
-  if(lowerDistanceOwnTrailRight > firstImpactRight) firstImpactRight = lowerDistanceOwnTrailRight;
+  if(ownNearestTrailNodeUp < firstImpactUp) firstImpactUp = ownNearestTrailNodeUp;
+  if(playerNearestTrailNodeUp < firstImpactUp) firstImpactUp = playerNearestTrailNodeUp;
 
   int firstImpactLeft = leftEdgeDistance;
-  if(lowerDistanceOponentTrailLeft < firstImpactLeft) firstImpactLeft = lowerDistanceOponentTrailLeft;
-  if(lowerDistanceOwnTrailLeft > firstImpactLeft) firstImpactLeft = lowerDistanceOwnTrailLeft;
+  if(ownNearestTrailNodeLeft < firstImpactLeft) firstImpactLeft = ownNearestTrailNodeLeft;
+  if(playerNearestTrailNodeLeft < firstImpactLeft) firstImpactLeft = playerNearestTrailNodeLeft;
+
+  int firstImpactRight = rightEdgeDistance;
+  if(ownNearestTrailNodeRight < firstImpactRight) firstImpactRight = ownNearestTrailNodeRight;
+  if(playerNearestTrailNodeRight < firstImpactRight) firstImpactRight = playerNearestTrailNodeRight;
 
   cout << "firstImpactUp: " << firstImpactUp << endl;
-  cout << "firstImpactDown: " << firstImpactDown << endl;
-  cout << "firstImpactRight: " << firstImpactRight << endl;
   cout << "firstImpactLeft: " << firstImpactLeft << endl;
+  cout << "firstImpactRight: " << firstImpactRight << endl;
 
-  switch(computer->getActualDirection()){
-    case UP:
-      {
-        int lastImpact = firstImpactUp;
-        if(firstImpactLeft > lastImpact) lastImpact = firstImpactLeft;
-        if(firstImpactRight > lastImpact) lastImpact = firstImpactRight;
-
-        if(lastImpact == firstImpactRight){
-          computer->move(RIGHT);
-          computer->setActualDirection(RIGHT);
-        }
-        if(lastImpact == firstImpactLeft){
-          computer->move(LEFT);
-          computer->setActualDirection(LEFT);
-        }
-      }
-      break;
-    case DOWN:
-      {
-        int lastImpact = firstImpactDown;
-        if(firstImpactRight > lastImpact) lastImpact = firstImpactRight;
-        if(firstImpactLeft > lastImpact) lastImpact = firstImpactLeft;
-
-        if(lastImpact == firstImpactRight){
-          computer->move(RIGHT);
-          computer->setActualDirection(RIGHT);
-        }
-        if(lastImpact == firstImpactLeft){
-          computer->move(LEFT);
-          computer->setActualDirection(LEFT);
-        }
-      }
-      break;
-    case LEFT:
-      {
-        int lastImpact = firstImpactLeft;
-        if(firstImpactUp > lastImpact) lastImpact = firstImpactUp;
-        if(firstImpactDown > lastImpact) lastImpact = firstImpactDown;
-
-        if(lastImpact == firstImpactUp){
-          computer->move(UP);
-          computer->setActualDirection(UP);
-        }
-        if(lastImpact == firstImpactDown){
-          computer->move(DOWN);
-          computer->setActualDirection(DOWN);
-        }
-      }
-      break;
-    case RIGHT:
-      {
-        int lastImpact = firstImpactRight;
-        if(firstImpactUp > lastImpact) lastImpact = firstImpactUp;
-        if(firstImpactDown > lastImpact) lastImpact = firstImpactDown;
-
-        if(lastImpact == firstImpactUp){
-          computer->move(UP);
-          computer->setActualDirection(UP);
-        }
-        if(lastImpact == firstImpactDown){
-          computer->move(DOWN);
-          computer->setActualDirection(DOWN);
-        }
-      }
-      break;
-    default:
-      break;
+  if(firstImpactUp >= firstImpactLeft && firstImpactUp >= firstImpactRight){
+    return UP;
+  }else if(firstImpactLeft >= firstImpactUp && firstImpactLeft >= firstImpactRight){
+    return LEFT;
+  }else if(firstImpactRight >= firstImpactUp && firstImpactRight >= firstImpactLeft){
+    return RIGHT;
   }
+
+  return UP;
+}
+
+int changeDirectionDown(Computer* computer, Player* player){
+  int bottomEdgeDistance = abs(BOTTOM_EDGE_Y - computer->getYCoordenate());
+  int leftEdgeDistance = abs(LEFT_EDGE_X - computer->getXCoordenate());
+  int rightEdgeDistance = abs(RIGHT_EDGE_X - computer->getXCoordenate());
+  
+  // Maior distancia possivel = de uma borda a outra
+  int ownNearestTrailNodeDown = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no abaixo mais proximo da propria trilha 
+  int playerNearestTrailNodeDown = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no abaixo mais proximo da trilha do player
+  int ownNearestTrailNodeLeft = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à esquerda mais proximo da propria trilha
+  int playerNearestTrailNodeLeft = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à esquerda mais proximo da trilha do player
+  int ownNearestTrailNodeRight = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à direita mais proximo da propria trilha
+  int playerNearestTrailNodeRight = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à direita mais proximo da trilha do player
+
+  for(int i = 0; i < (int)player->getTrail().size(); i++){
+    TrailNode actualOwnTrailNode = computer->getTrail()[i];
+    TrailNode actualPlayerTrailNode = player->getTrail()[i];
+    
+    bool ownTrailNodeBelow = actualOwnTrailNode.getYCoordenate() < computer->getYCoordenate() && actualOwnTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool playerTrailNodeBelow = actualPlayerTrailNode.getYCoordenate() < computer->getYCoordenate() && actualPlayerTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool ownTrailNodeLeft = actualOwnTrailNode.getXCoordenate() < computer->getXCoordenate() && actualOwnTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool playerTrailNodeLeft = actualPlayerTrailNode.getXCoordenate() < computer->getXCoordenate() && actualPlayerTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool ownTrailNodeRight = actualOwnTrailNode.getXCoordenate() > computer->getXCoordenate() && actualOwnTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool playerTrailNodeRight = actualPlayerTrailNode.getXCoordenate() > computer->getXCoordenate() && actualPlayerTrailNode.getYCoordenate() == computer->getYCoordenate();
+
+    if(ownTrailNodeBelow || playerTrailNodeBelow){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getYCoordenate() - computer->getYCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getYCoordenate() - computer->getYCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeDown) ownNearestTrailNodeDown = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeDown) playerNearestTrailNodeDown = playerTrailNodeDistance;
+    }
+
+    if(ownTrailNodeLeft || playerTrailNodeLeft){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getXCoordenate() - computer->getXCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getXCoordenate() - computer->getXCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeLeft) ownNearestTrailNodeLeft = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeLeft) playerNearestTrailNodeLeft = playerTrailNodeDistance;
+    }
+
+    if(ownTrailNodeRight || playerTrailNodeRight){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getXCoordenate() - computer->getXCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getXCoordenate() - computer->getXCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeRight) ownNearestTrailNodeRight = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeRight) playerNearestTrailNodeRight = playerTrailNodeDistance;
+    }
+  }
+
+  int firstImpactDown = bottomEdgeDistance;
+  if(ownNearestTrailNodeDown < firstImpactDown) firstImpactDown = ownNearestTrailNodeDown;
+  if(playerNearestTrailNodeDown < firstImpactDown) firstImpactDown = playerNearestTrailNodeDown;
+
+  int firstImpactLeft = leftEdgeDistance;
+  if(ownNearestTrailNodeLeft < firstImpactLeft) firstImpactLeft = ownNearestTrailNodeLeft;
+  if(playerNearestTrailNodeLeft < firstImpactLeft) firstImpactLeft = playerNearestTrailNodeLeft;
+
+  int firstImpactRight = rightEdgeDistance;
+  if(ownNearestTrailNodeRight < firstImpactRight) firstImpactRight = ownNearestTrailNodeRight;
+  if(playerNearestTrailNodeRight < firstImpactRight) firstImpactRight = playerNearestTrailNodeRight;
+
+  cout << "firstImpactDown: " << firstImpactDown << endl;
+  cout << "firstImpactLeft: " << firstImpactLeft << endl;
+  cout << "firstImpactRight: " << firstImpactRight << endl;
+
+  if(firstImpactDown >= firstImpactLeft && firstImpactDown >= firstImpactRight){
+    return DOWN;
+  } else if(firstImpactLeft >= firstImpactDown && firstImpactLeft >= firstImpactRight){
+    return LEFT;
+  } else if(firstImpactRight >= firstImpactDown && firstImpactRight >= firstImpactLeft){
+    return RIGHT;
+  }
+
+  return DOWN;
+}
+
+int changeDirectionLeft(Computer* computer, Player* player){
+  int leftEdgeDistance = abs(LEFT_EDGE_X - computer->getXCoordenate());
+  int bottomEdgeDistance = abs(BOTTOM_EDGE_Y - computer->getYCoordenate());
+  int topEdgeDistance = abs(TOP_EDGE_Y - computer->getYCoordenate());
+  
+  // Maior distancia possivel = de uma borda a outra
+  int ownNearestTrailNodeLeft = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à esquerda mais proximo da propria trilha
+  int playerNearestTrailNodeLeft = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à esquerda mais proximo da trilha do player
+  int ownNearestTrailNodeUp = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no acima mais proximo da propria trilha
+  int playerNearestTrailNodeUp = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no acima mais proximo da trilha do player
+  int ownNearestTrailNodeDown = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no abaixo mais proximo da propria trilha 
+  int playerNearestTrailNodeDown = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no abaixo mais proximo da trilha do player
+
+  for(int i = 0; i < (int)player->getTrail().size(); i++){
+    TrailNode actualOwnTrailNode = computer->getTrail()[i];
+    TrailNode actualPlayerTrailNode = player->getTrail()[i];
+    
+    bool ownTrailNodeLeft = actualOwnTrailNode.getXCoordenate() < computer->getXCoordenate() && actualOwnTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool playerTrailNodeLeft = actualPlayerTrailNode.getXCoordenate() < computer->getXCoordenate() && actualPlayerTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool ownTrailNodeUp = actualOwnTrailNode.getYCoordenate() < computer->getYCoordenate() && actualOwnTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool playerTrailNodeUp = actualPlayerTrailNode.getYCoordenate() < computer->getYCoordenate() && actualPlayerTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool ownTrailNodeDown = actualOwnTrailNode.getYCoordenate() > computer->getYCoordenate() && actualOwnTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool playerTrailNodeDown = actualPlayerTrailNode.getYCoordenate() > computer->getYCoordenate() && actualPlayerTrailNode.getXCoordenate() == computer->getXCoordenate();
+
+    if(ownTrailNodeLeft || playerTrailNodeLeft){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getXCoordenate() - computer->getXCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getXCoordenate() - computer->getXCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeLeft) ownNearestTrailNodeLeft = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeLeft) playerNearestTrailNodeLeft = playerTrailNodeDistance;
+    }
+
+    if(ownTrailNodeUp || playerTrailNodeUp){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getYCoordenate() - computer->getYCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getYCoordenate() - computer->getYCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeUp) ownNearestTrailNodeUp = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeUp) playerNearestTrailNodeUp = playerTrailNodeDistance;
+    }
+
+    if(ownTrailNodeDown || playerTrailNodeDown){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getYCoordenate() - computer->getYCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getYCoordenate() - computer->getYCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeDown) ownNearestTrailNodeDown = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeDown) playerNearestTrailNodeDown = playerTrailNodeDistance;
+    }
+  }
+
+  int firstImpactLeft = leftEdgeDistance;
+  if(ownNearestTrailNodeLeft < firstImpactLeft) firstImpactLeft = ownNearestTrailNodeLeft;
+  if(playerNearestTrailNodeLeft < firstImpactLeft) firstImpactLeft = playerNearestTrailNodeLeft;
+
+  int firstImpactUp = topEdgeDistance;
+  if(ownNearestTrailNodeUp < firstImpactUp) firstImpactUp = ownNearestTrailNodeUp;
+  if(playerNearestTrailNodeUp < firstImpactUp) firstImpactUp = playerNearestTrailNodeUp;
+
+  int firstImpactDown = bottomEdgeDistance;
+  if(ownNearestTrailNodeDown < firstImpactDown) firstImpactDown = ownNearestTrailNodeDown;
+  if(playerNearestTrailNodeDown < firstImpactDown) firstImpactDown = playerNearestTrailNodeDown;
+
+  cout << "firstImpactLeft: " << firstImpactLeft << endl;
+  cout << "firstImpactUp: " << firstImpactUp << endl;
+  cout << "firstImpactDown: " << firstImpactDown << endl;
+
+  if(firstImpactLeft >= firstImpactUp && firstImpactLeft >= firstImpactDown){
+    return LEFT;
+  } else if(firstImpactUp >= firstImpactLeft && firstImpactUp >= firstImpactDown){
+    return UP;
+  } else if(firstImpactDown >= firstImpactUp && firstImpactDown >= firstImpactLeft){
+    return DOWN;
+  }
+
+  return LEFT;
+}
+
+int changeDirectionRight(Computer* computer, Player* player){
+  int rightEdgeDistance = abs(RIGHT_EDGE_X - computer->getXCoordenate());
+  int bottomEdgeDistance = abs(BOTTOM_EDGE_Y - computer->getYCoordenate());
+  int topEdgeDistance = abs(TOP_EDGE_Y - computer->getYCoordenate());
+  
+  // Maior distancia possivel = de uma borda a outra
+  int ownNearestTrailNodeRight = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à direita mais proximo da propria trilha
+  int playerNearestTrailNodeRight = abs(LEFT_EDGE_X - RIGHT_EDGE_X); // Distancia para um no à direita mais proximo da trilha do player
+  int ownNearestTrailNodeUp = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no acima mais proximo da propria trilha
+  int playerNearestTrailNodeUp = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no acima mais proximo da trilha do player
+  int ownNearestTrailNodeDown = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no abaixo mais proximo da propria trilha 
+  int playerNearestTrailNodeDown = abs(TOP_EDGE_Y - BOTTOM_EDGE_Y); // Distancia para um no abaixo mais proximo da trilha do player
+
+  for(int i = 0; i < (int)player->getTrail().size(); i++){
+    TrailNode actualOwnTrailNode = computer->getTrail()[i];
+    TrailNode actualPlayerTrailNode = player->getTrail()[i];
+    
+    bool ownTrailNodeRight = actualOwnTrailNode.getXCoordenate() > computer->getXCoordenate() && actualOwnTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool playerTrailNodeRight = actualPlayerTrailNode.getXCoordenate() > computer->getXCoordenate() && actualPlayerTrailNode.getYCoordenate() == computer->getYCoordenate();
+    bool ownTrailNodeUp = actualOwnTrailNode.getYCoordenate() < computer->getYCoordenate() && actualOwnTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool playerTrailNodeUp = actualPlayerTrailNode.getYCoordenate() < computer->getYCoordenate() && actualPlayerTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool ownTrailNodeDown = actualOwnTrailNode.getYCoordenate() > computer->getYCoordenate() && actualOwnTrailNode.getXCoordenate() == computer->getXCoordenate();
+    bool playerTrailNodeDown = actualPlayerTrailNode.getYCoordenate() > computer->getYCoordenate() && actualPlayerTrailNode.getXCoordenate() == computer->getXCoordenate();
+
+    if(ownTrailNodeRight || playerTrailNodeRight){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getXCoordenate() - computer->getXCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getXCoordenate() - computer->getXCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeRight) ownNearestTrailNodeRight = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeRight) playerNearestTrailNodeRight = playerTrailNodeDistance;
+    }
+
+    if(ownTrailNodeUp || playerTrailNodeUp){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getYCoordenate() - computer->getYCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getYCoordenate() - computer->getYCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeUp) ownNearestTrailNodeUp = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeUp) playerNearestTrailNodeUp = playerTrailNodeDistance;
+    }
+
+    if(ownTrailNodeDown || playerTrailNodeDown){
+      int ownTrailNodeDistance = abs(actualOwnTrailNode.getYCoordenate() - computer->getYCoordenate());
+      int playerTrailNodeDistance = abs(actualPlayerTrailNode.getYCoordenate() - computer->getYCoordenate());
+      if(ownTrailNodeDistance < ownNearestTrailNodeDown) ownNearestTrailNodeDown = ownTrailNodeDistance;
+      if(playerTrailNodeDistance < playerNearestTrailNodeDown) playerNearestTrailNodeDown = playerTrailNodeDistance;
+    }
+  }
+
+  int firstImpactRight = rightEdgeDistance;
+  if(ownNearestTrailNodeRight < firstImpactRight) firstImpactRight = ownNearestTrailNodeRight;
+  if(playerNearestTrailNodeRight < firstImpactRight) firstImpactRight = playerNearestTrailNodeRight;
+
+  int firstImpactUp = topEdgeDistance;
+  if(ownNearestTrailNodeUp < firstImpactUp) firstImpactUp = ownNearestTrailNodeUp;
+  if(playerNearestTrailNodeUp < firstImpactUp) firstImpactUp = playerNearestTrailNodeUp;
+
+  int firstImpactDown = bottomEdgeDistance;
+  if(ownNearestTrailNodeDown < firstImpactDown) firstImpactDown = ownNearestTrailNodeDown;
+  if(playerNearestTrailNodeDown < firstImpactDown) firstImpactDown = playerNearestTrailNodeDown;
+
+  cout << "firstImpactRight: " << firstImpactRight << endl;
+  cout << "firstImpactUp: " << firstImpactUp << endl;
+  cout << "firstImpactDown: " << firstImpactDown << endl;
+
+  if(firstImpactRight >= firstImpactUp && firstImpactRight >= firstImpactDown){
+    return RIGHT;
+  } else if(firstImpactUp >= firstImpactRight && firstImpactUp >= firstImpactDown){
+    return UP;
+  } else if(firstImpactDown >= firstImpactUp && firstImpactDown >= firstImpactRight){
+    return DOWN;
+  }
+
+  return RIGHT;
 }
 
 #endif

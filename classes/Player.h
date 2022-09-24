@@ -21,6 +21,7 @@ class Player{
   protected:
     int xCoordenate;
     int yCoordenate;
+    int direction;
     vector<TrailNode> trail;
     float color[3];
     float scale[3];
@@ -28,6 +29,8 @@ class Player{
   public:
     int getXCoordenate();
     int getYCoordenate();
+    int getDirection();
+    void setDirection(int);
     vector<TrailNode> getTrail();
     void setCoordenate(float x, float y);
     void move(int direction);
@@ -91,23 +94,43 @@ void Player::setCoordenate(float x, float y) {
   this->yCoordenate = (int)y;
 }
 
+int Player::getDirection(){
+  return this->direction;
+}
+
+void Player::setDirection(int direction){
+  this->direction = direction;
+}
+
 void Player::move(int direction){
   switch(direction){
     case UP:
-      setCoordenate(this->xCoordenate, this->yCoordenate + DEFAULT_DISPLACEMENT);
-      trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      if(this->direction != DOWN){
+        this->direction = UP;
+        setCoordenate(this->xCoordenate, this->yCoordenate + DEFAULT_DISPLACEMENT);
+        trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      }
       break;
     case DOWN:
-      setCoordenate(this->xCoordenate, this->yCoordenate - DEFAULT_DISPLACEMENT);
-      trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      if(this->direction != UP){
+        this->direction = DOWN;
+        setCoordenate(this->xCoordenate, this->yCoordenate - DEFAULT_DISPLACEMENT);
+        trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      }
       break;
     case LEFT:
-      setCoordenate(this->xCoordenate - DEFAULT_DISPLACEMENT, this->yCoordenate);
-      trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      if(this->direction != RIGHT){
+        this->direction = LEFT;
+        setCoordenate(this->xCoordenate - DEFAULT_DISPLACEMENT, this->yCoordenate);
+        trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      }
       break;
     case RIGHT:
-      setCoordenate(this->xCoordenate + DEFAULT_DISPLACEMENT, this->yCoordenate);
-      trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      if(this->direction != LEFT){
+        this->direction = RIGHT;
+        setCoordenate(this->xCoordenate + DEFAULT_DISPLACEMENT, this->yCoordenate);
+        trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      }
       break;
     default:
       break;

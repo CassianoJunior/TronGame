@@ -142,9 +142,11 @@ void resetPlayers(){
   player1->resetTrail();
   player2->resetTrail();
   pc->resetTrail();
-  player1Direction = 5;
-  player2Direction = LEFT;
-  pc->setActualDirection(LEFT);
+  // player1Direction = RIGHT;
+  // player2Direction = LEFT;
+  player1->setDirection(RIGHT);
+  player2->setDirection(LEFT);
+  pc->setActualDirection(UP);
   gameover = false;
 }
 
@@ -224,40 +226,28 @@ void keyboard(unsigned char key, int x, int y){
     case W_KEY:
       if(isInGame){
         cout << "Player 1 UP" << endl;
-        if(player1Direction != DOWN) {
-          player1Direction = UP;
-          // player1->move(UP);
-        }
+        player1->setDirection(UP);
         glutPostRedisplay();
       }
       break;
     case A_KEY:
       if(isInGame){
         cout << "Player 1 LEFT" << endl;
-        if(player1Direction != RIGHT) {
-          player1Direction = LEFT;
-          // player1->move(LEFT);
-        }
+        player1->setDirection(LEFT);
         glutPostRedisplay();
       }
       break;
     case S_KEY:
       if(isInGame){
         cout << "Player 1 DOWN" << endl;
-        if(player1Direction != UP) {
-          player1Direction = DOWN;
-          // player1->move(DOWN);
-        }
+        player1->setDirection(DOWN);
         glutPostRedisplay();
       }
       break;
     case D_KEY:
       if(isInGame){
         cout << "Player 1 RIGHT" << endl;
-        if(player1Direction != LEFT) {
-          player1Direction = RIGHT;
-          // player1->move(RIGHT);
-        }
+        player1->setDirection(RIGHT);
         glutPostRedisplay();
       }
       break;
@@ -277,9 +267,7 @@ void processSpecialKeys(int key, int x, int y) {
         }
       } else if(isInGame){
         cout << "Player 2 UP" << endl;
-        if(player2Direction != DOWN){
-          player2Direction = UP;
-        }
+        player2->setDirection(UP);
       }
       glutPostRedisplay();
       break;
@@ -292,27 +280,21 @@ void processSpecialKeys(int key, int x, int y) {
         }
       } else if(isInGame){
         cout << "Player 2 DOWN" << endl;
-        if(player2Direction != UP){
-          player2Direction = DOWN;
-        }
+        player2->setDirection(DOWN);
       }
       glutPostRedisplay();
       break;
     case GLUT_KEY_LEFT:
       if(isInGame){
         cout << "Player 2 LEFT" << endl;
-        if(player2Direction != RIGHT){
-          player2Direction = LEFT;
-        }
+        player2->setDirection(LEFT);
       }
       glutPostRedisplay();
       break;
     case GLUT_KEY_RIGHT:
       if(isInGame){
         cout << "Player 2 RIGHT" << endl;
-        if(player2Direction != LEFT){
-          player2Direction = RIGHT;
-        }
+        player2->setDirection(RIGHT);
       }
       glutPostRedisplay();
       break;
@@ -359,7 +341,8 @@ void displayGame2Players(){
   // player2->showTrail();
 
   if(!hasPlayer2) {
-    // computerAction(pc, player1);
+    computerAction(pc, player1);
+    cout << "Computer direction" << pc->getDirection() << endl;
     // pc->showTrail();
   }
 
@@ -759,7 +742,7 @@ void timer(int value){
     glutPostRedisplay();
     glutTimerFunc(1000/FPS, timer, 0);
 
-    switch(player1Direction){
+    switch(player1->getDirection()){
       case UP:
         player1->move(UP);
         break;
@@ -777,7 +760,7 @@ void timer(int value){
     }
 
     if(hasPlayer2){
-      switch(player2Direction){
+      switch(player2->getDirection()){
         case UP:
           player2->move(UP);
           break;
@@ -794,7 +777,26 @@ void timer(int value){
           break;
       }
     } else {
-      pc->move(pc->getActualDirection());
+      switch(pc->getActualDirection()){
+        case UP:
+          cout << "Computer UP" << endl;
+          pc->move(UP);
+          break;
+        case DOWN:
+          cout << "Computer DOWN" << endl;
+          pc->move(DOWN);
+          break;
+        case LEFT:
+          cout << "Computer LEFT" << endl;
+          pc->move(LEFT);
+          break;
+        case RIGHT:
+          cout << "Computer RIGHT" << endl;
+          pc->move(RIGHT);
+          break;
+        default:
+          break;
+      }
     }
     
   }
