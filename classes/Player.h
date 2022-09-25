@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -5,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-#include "TrailNode.cpp"
+#include "TrailNode.h"
 
 // Direction indentifiers defines
 #define UP 0
@@ -15,9 +18,10 @@
 
 #define DEFAULT_DISPLACEMENT 1
 class Player{
-  private:
+  protected:
     int xCoordenate;
     int yCoordenate;
+    int direction;
     vector<TrailNode> trail;
     float color[3];
     float scale[3];
@@ -25,6 +29,8 @@ class Player{
   public:
     int getXCoordenate();
     int getYCoordenate();
+    int getDirection();
+    void setDirection(int);
     vector<TrailNode> getTrail();
     void setCoordenate(float x, float y);
     void move(int direction);
@@ -53,10 +59,10 @@ void Player::renderSphere(float r, float g, float b, float scaleX, float scaleY,
   scale[1] = scaleY;
   scale[2] = scaleZ;
   glPushMatrix();
-    glTranslatef(this->xCoordenate, this->yCoordenate, 0);
+    glTranslatef(this->xCoordenate, this->yCoordenate, 1);
     glScalef(scaleX, scaleY, scaleZ);
     glColor3f(r, g, b);
-    glutSolidSphere(1, 50, 50);
+    glutWireSphere(1, 50, 50);
   glPopMatrix();
 }
 
@@ -88,23 +94,51 @@ void Player::setCoordenate(float x, float y) {
   this->yCoordenate = (int)y;
 }
 
+int Player::getDirection(){
+  return this->direction;
+}
+
+void Player::setDirection(int direction){
+  if(direction == UP && this->direction != DOWN){
+    this->direction = direction;
+  } else if(direction == DOWN && this->direction != UP){
+    this->direction = direction;
+  } else if(direction == LEFT && this->direction != RIGHT){
+    this->direction = direction;
+  } else if(direction == RIGHT && this->direction != LEFT){
+    this->direction = direction;
+  }
+}
+
 void Player::move(int direction){
   switch(direction){
     case UP:
-      setCoordenate(this->xCoordenate, this->yCoordenate + DEFAULT_DISPLACEMENT);
-      trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      if(this->direction != DOWN){
+        this->direction = UP;
+        setCoordenate(this->xCoordenate, this->yCoordenate + DEFAULT_DISPLACEMENT);
+        trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      }
       break;
     case DOWN:
-      setCoordenate(this->xCoordenate, this->yCoordenate - DEFAULT_DISPLACEMENT);
-      trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      if(this->direction != UP){
+        this->direction = DOWN;
+        setCoordenate(this->xCoordenate, this->yCoordenate - DEFAULT_DISPLACEMENT);
+        trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      }
       break;
     case LEFT:
-      setCoordenate(this->xCoordenate - DEFAULT_DISPLACEMENT, this->yCoordenate);
-      trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      if(this->direction != RIGHT){
+        this->direction = LEFT;
+        setCoordenate(this->xCoordenate - DEFAULT_DISPLACEMENT, this->yCoordenate);
+        trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      }
       break;
     case RIGHT:
-      setCoordenate(this->xCoordenate + DEFAULT_DISPLACEMENT, this->yCoordenate);
-      trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      if(this->direction != LEFT){
+        this->direction = RIGHT;
+        setCoordenate(this->xCoordenate + DEFAULT_DISPLACEMENT, this->yCoordenate);
+        trail.push_back(TrailNode(this->xCoordenate, this->yCoordenate));
+      }
       break;
     default:
       break;
@@ -131,3 +165,5 @@ void Player::showTrail(){
 void Player::resetTrail(){
   this->trail.clear();
 }
+
+#endif
