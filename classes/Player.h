@@ -31,6 +31,7 @@ class Player{
     int getYCoordenate();
     int getDirection();
     void setDirection(int);
+    void forceDirection(int);
     vector<TrailNode> getTrail();
     void setCoordenate(float x, float y);
     void move(int direction);
@@ -43,8 +44,14 @@ class Player{
 };
 
 void Player::render(GLuint object, float r, float g, float b, float scaleX, float scaleY, float scaleZ) {
+  color[0] = r;
+  color[1] = g;
+  color[2] = b;
+  scale[0] = scaleX;
+  scale[1] = scaleY;
+  scale[2] = scaleZ;
   glPushMatrix();
-    glTranslatef(this->xCoordenate, this->yCoordenate, 0);
+    glTranslatef(this->xCoordenate + 10, this->yCoordenate, 0);
     glScalef(scaleX, scaleY, scaleZ);
     glColor3f(r, g, b);
     glCallList(object);
@@ -108,6 +115,10 @@ void Player::setDirection(int direction){
   } else if(direction == RIGHT && this->direction != LEFT){
     this->direction = direction;
   }
+}
+
+void Player::forceDirection(int direction){
+  this->direction = direction;
 }
 
 void Player::move(int direction){
