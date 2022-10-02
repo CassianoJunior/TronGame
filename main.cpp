@@ -1,3 +1,14 @@
+/**
+ * @file main.cpp
+ * @authors Cassiano Junior <cassianojuniorww@gmail.com> and Jose Augusto <jose10augusto10@ufpi.edu.br>
+ * @brief An simple copy of Tron game to course of Computer Graphics
+ * @version 0.1
+ * @date 2022-10-02
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <iostream>
 #include <string>
 
