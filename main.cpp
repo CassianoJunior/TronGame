@@ -1,3 +1,15 @@
+/**
+ * 
+ * @file main.cpp
+ * @authors Cassiano Junior <cassianojuniorww@gmail.com> and Jose Augusto <jose10augusto10@ufpi.edu.br>
+ * @brief An simple copy of Tron game to course of Computer Graphics
+ * @version 0.1
+ * @date 2022-10-02
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <iostream>
 #include <string>
 
@@ -820,7 +832,7 @@ void changeScreen(int identifier){
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glutTimerFunc(2000, timer, 0);
       reshapeInGame(windowWidth, windowHeight);
-      sndPlaySound(TEXT("./sounds/theme.wav"), SND_ASYNC | SND_LOOP);
+      sndPlaySound(TEXT("./sounds/themeCompress.wav"), SND_ASYNC | SND_LOOP);
       resetPlayers();
       glutPostRedisplay();
       break;
