@@ -69,7 +69,7 @@ bool playerIsWinner = false; // Flag to check who is the winner | true = player 
 bool hasPlayer2 = false; // Flag to check if the game is single player or versus computer
 int score1 = 0; // Player 1 score
 int score2 = 0; // Player 2 score
-int actualFps = FPS;
+int actualFps = FPS; // Actual FPS
 
 void init(void);
 void reset();
@@ -91,7 +91,6 @@ void displayGame(void);
 void keyboard(unsigned char key, int x, int y);
   void changeScreen(int identifier);
 void processSpecialKeys(int key, int x, int y);
-void mouse(int button, int state, int x, int y);
 void timer(int value);
   void changeFps(int sizeOfTrail);
 void idle(int value);
@@ -109,9 +108,7 @@ int main(int argc, char** argv) {
   glutDisplayFunc(welcomeDisplay_EN);
 
   glutKeyboardFunc(keyboard);
-  glutSpecialFunc(processSpecialKeys);\
-
-  glutMouseFunc(mouse);
+  glutSpecialFunc(processSpecialKeys);
 
   glutTimerFunc(0, idle, 0);
 
@@ -304,18 +301,6 @@ void processSpecialKeys(int key, int x, int y) {
       }
       glutPostRedisplay();
       break;
-    default:
-      break;
-  }
-}
-
-void mouse(int button, int state, int x, int y) {
-  switch (button) {
-    case GLUT_LEFT_BUTTON:
-      if (state == GLUT_DOWN) {
-        cout << "Left mouse button pressed at (" << x << ", " << WINDOW_HEIGHT - y << ")" << endl;
-      }
-    break;
     default:
       break;
   }
@@ -760,19 +745,15 @@ void timer(int value){
     } else {
       switch(pc->getActualDirection()){
         case UP:
-          // cout << "Computer UP" << endl;
           pc->move(UP);
           break;
         case DOWN:
-          // cout << "Computer DOWN" << endl;
           pc->move(DOWN);
           break;
         case LEFT:
-          // cout << "Computer LEFT" << endl;
           pc->move(LEFT);
           break;
         case RIGHT:
-          // cout << "Computer RIGHT" << endl;
           pc->move(RIGHT);
           break;
         default:

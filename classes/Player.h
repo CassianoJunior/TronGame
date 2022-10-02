@@ -35,28 +35,11 @@ class Player{
     vector<TrailNode> getTrail();
     void setCoordenate(float x, float y);
     void move(int direction);
-    void render(GLuint object, float r, float g, float b, float scaleX, float scaleY, float scaleZ);
     void renderSphere(float r, float g, float b, float scaleX, float scaleY, float scaleZ);
-    void renderCube(float r, float g, float b, float scaleX, float scaleY, float scaleZ);
     void resetTrail();
     void renderTrail();
     void showTrail();
 };
-
-void Player::render(GLuint object, float r, float g, float b, float scaleX, float scaleY, float scaleZ) {
-  color[0] = r;
-  color[1] = g;
-  color[2] = b;
-  scale[0] = scaleX;
-  scale[1] = scaleY;
-  scale[2] = scaleZ;
-  glPushMatrix();
-    glTranslatef(this->xCoordenate + 10, this->yCoordenate, 0);
-    glScalef(scaleX, scaleY, scaleZ);
-    glColor3f(r, g, b);
-    glCallList(object);
-  glPopMatrix();
-}
 
 void Player::renderSphere(float r, float g, float b, float scaleX, float scaleY, float scaleZ) {
   color[0] = r;
@@ -70,21 +53,6 @@ void Player::renderSphere(float r, float g, float b, float scaleX, float scaleY,
     glScalef(scaleX, scaleY, scaleZ);
     glColor3f(r, g, b);
     glutWireSphere(1, 50, 50);
-  glPopMatrix();
-}
-
-void Player::renderCube(float r, float g, float b, float scaleX, float scaleY, float scaleZ){
-  color[0] = r;
-  color[1] = g;
-  color[2] = b;
-  scale[0] = scaleX;
-  scale[1] = scaleY;
-  scale[2] = scaleZ;
-  glPushMatrix();
-    glTranslatef(this->xCoordenate, this->yCoordenate, 0);
-    glScalef(scaleX, scaleY, scaleZ);
-    glColor3f(r, g, b);
-    glutSolidCube(1);
   glPopMatrix();
 }
 

@@ -22,7 +22,6 @@ class Computer : public Player{
   public:
     void setActualDirection(int direction);
     int getActualDirection();
-    // void takeDecision(Player* player);
 };
 
 void Computer::setActualDirection(int direction){

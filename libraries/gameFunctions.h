@@ -27,7 +27,6 @@
 #define TOP_EDGE_Y 73
 #define BOTTOM_EDGE_Y -73
 
-void renderScenarioOrtho(int width, int height);
 void renderScenarioPerspective(int width, int height);
 int hadSomeCollision(Player* player1, Player* player2);
 void computerAction(Computer* computer, Player* player);
@@ -35,50 +34,6 @@ int changeDirectionUp(Computer* computer, Player* player);
 int changeDirectionDown(Computer* computer, Player* player);
 int changeDirectionLeft(Computer* computer, Player* player);
 int changeDirectionRight(Computer* computer, Player* player);
-
-void renderScenarioOrtho(int width, int height){
-  //Top edge
-  glColor3f(0.19, 0.23, 0.3);
-  glPushMatrix();
-    glBegin(GL_QUADS);
-      glVertex2f(50, height-30);
-      glVertex2f(width - 50, height-30);
-      glVertex2f(width - 50, height - 8 - 30);
-      glVertex2f(50, height - 8 - 30);
-    glEnd();
-  glPopMatrix();
-
-  //Bottom edge
-  glPushMatrix();
-    glBegin(GL_QUADS);
-      glVertex2f(0, 0);
-      glVertex2f(width, 0);
-      glVertex2f(width, 8);
-      glVertex2f(0, 8);
-    glEnd();
-  glPopMatrix();
-
-  //Left edge
-  glPushMatrix();
-    glBegin(GL_QUADS);
-      glVertex2f(0, 0);
-      glVertex2f(0, height);
-      glVertex2f(8, height);
-      glVertex2f(8, 0);
-    glEnd();
-  glPopMatrix();
-
-  //Right edge
-  glPushMatrix();
-    glBegin(GL_QUADS);
-      glVertex2f(width, 0);
-      glVertex2f(width, height);
-      glVertex2f(width - 8, height);
-      glVertex2f(width - 8, 0);
-    glEnd();
-  glPopMatrix();
-  glColor3f(1, 1, 1);
-}
 
 void renderScenarioPerspective(int width, int height){
   glColor3f(0.19, 0.23, 0.3);
@@ -103,7 +58,6 @@ void renderScenarioPerspective(int width, int height){
       glVertex2f(0, -3);
     glEnd();
   glPopMatrix();
-  // glutWireCube(20);
 
   //Left edge
   glPushMatrix();
@@ -157,10 +111,9 @@ int hadSomeCollision(Player* player1, Player* player2){
   for (int i = 0; i < (int) player1->getTrail().size() - 1; i++) {
     int x1 = player1->getTrail()[i].getXCoordenate();
     int y1 = player1->getTrail()[i].getYCoordenate();
-    // cout << "xy("<< x1 << "," << y1 << ")" << endl;
+
     int x2 = player2->getTrail()[i].getXCoordenate();
     int y2 = player2->getTrail()[i].getYCoordenate();
-    // cout << "xy("<< x2 << "," << y2 << ")" << endl;
 
     bool player1CollideWithPlayer2Trail = player1->getXCoordenate() == x2 && player1->getYCoordenate() == y2;
     bool player1CollideWithOwnTrail = player1->getXCoordenate() == x1 && player1->getYCoordenate() == y1;
